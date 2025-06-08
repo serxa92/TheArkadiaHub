@@ -7,22 +7,23 @@
 
 ## 🧠 What is it about?
 
-This project simulates a lightweight video game platform similar to Steam or Metacritic, where users can:
+This project simulates a video game platform where users can:
+- Explore recent and popular releases
 - Search for games by name
 - View detailed game information
 - Filter by genre, platform, and order
-- Explore recent and popular releases
+
 
 ---
 
 ## 🎯 What is it for?
 
-The goal of this project is to put into practice the core concepts learned in previous modules:
-- Modular component-based architecture
-- Responsive design using Flexbox and Grid
-- API consumption and asynchronous JS
-- localStorage usage
-- Real interactivity without frameworks
+The goal of this project is to put into practice the core concepts learned this year:
+- Modular component-based architecture.
+- Responsive design.
+- API consumption and asynchronous JS.
+- localStorage usage.
+- Real interactivity without frameworks.
 
 It is also a project designed to be **presented in interviews** or included in a personal portfolio.
 
