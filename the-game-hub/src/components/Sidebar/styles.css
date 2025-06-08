@@ -1,0 +1,46 @@
+/* Sidebar styles */
+
+.sidebar-nav {
+  padding: 1.5em;
+  height: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 1em;
+}
+
+.section-title {
+  font-size: 2rem;
+}
+
+.sidebar-nav {
+  font-weight: bold;
+  font-size: 0.9em;
+  color: var(--color-accent);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav a {
+  text-decoration: none;
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.4em 0.2em;
+}
+
+
+ 
+.sidebar-nav a:hover i {
+  color: var(--color-accent);
+  transition: color 0.3s ease;
+  transform: scale(1.1);
+}
