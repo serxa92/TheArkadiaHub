@@ -54,6 +54,8 @@ It is also a project designed to be **presented in interviews** or included in a
 Live version available at:
 👉 https://
 
-## 👤 Author
+## Author
 
 This project was developed by Serxa92 using Vite and Vanilla JavaScript.
+
+ 
