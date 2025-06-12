@@ -3,7 +3,10 @@ import "./style.css";
 import { Navbar } from "./components/Navbar/index.js";
 import { Sidebar } from "./components/Sidebar/index.js";
 import { Footer } from "./components/Footer/index.js";
+import { applySavedTheme, initThemeToggle } from './components/ThemeToogle/index.js';
 
+// Aplicamos el tema guardado ANTES de renderizar
+applySavedTheme(); 
 
 document.querySelector("#app").innerHTML = `
   <header>${Navbar()}</header>
@@ -18,5 +21,4 @@ document.querySelector("#app").innerHTML = `
   <footer>${Footer()}</footer>
 `;
 
-
-
+initThemeToggle(); 
