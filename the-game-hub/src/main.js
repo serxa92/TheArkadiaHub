@@ -52,8 +52,6 @@ document.querySelector("#app").innerHTML = `
 // Inicializamos toggle de tema
 
 initThemeToggle();
-setupSearch();
-
 
 // Guardamos el valor del orden elegido por el usuario
 
@@ -178,48 +176,47 @@ const setupSearch = () => {
 
   // Intentamos buscar un juego, si no se encuentra, buscamos por slug, que es una forma de identificar juegos por su nombre amigable en la URL
 
-  const searchGames = async () => {
-    const query = input.value.trim();
-    if (!query) return;
+ const searchGames = async () => {
+  const query = input.value.trim();
+  if (!query) return;
 
-    list.innerHTML = "";
+  list.innerHTML = "";
 
-    const url = `https://api.rawg.io/api/games?search=${encodeURIComponent(
-      query
-    )}&search_precise=true&key=${API_KEY}`;
+  const url = `https://api.rawg.io/api/games?search=${encodeURIComponent(query)}&search_precise=true&key=${API_KEY}`;
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
 
-      if (data.results.length > 0) {
-        seenIds.clear();
-        renderGames(data.results);
-        return;
-      }
-
-      //Si no hay resultados, intentamos buscar por slug
-      const fallbackSlug = normalizeToSlug(query);
-      const slugUrl = `https://api.rawg.io/api/games/${fallbackSlug}?key=${API_KEY}`;
-
-      const slugRes = await fetch(slugUrl);
-
-      if (!slugRes.ok) throw new Error("Juego no encontrado por slug");
-
-      const fallbackGame = await slugRes.json();
-
+    if (data.results.length > 0) {
       seenIds.clear();
-      renderGames([fallbackGame]);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        theme: "dark",
-        title: "No results",
-        text: `No game found for "${query}".`,
-      });
+      renderGames(data.results);
+      return;
     }
-  };
 
+    //Si no hay resultados, intentamos buscar por slug
+    const fallbackSlug = normalizeToSlug(query);
+    const slugUrl = `https://api.rawg.io/api/games/${fallbackSlug}?key=${API_KEY}`;
+
+    const slugRes = await fetch(slugUrl);
+
+    if (!slugRes.ok) throw new Error("Juego no encontrado por slug");
+
+    const fallbackGame = await slugRes.json();
+
+    seenIds.clear();
+    renderGames([fallbackGame]);
+
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      theme: "dark",
+      title: "No results",
+      text: `No game found for "${query}".`,
+    });
+  }
+};
+  
   // Ejecutamos la busqueda al pulsar Enter en el input
   input?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") searchGames();
@@ -366,6 +363,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 // Carga inicial
 document.addEventListener("DOMContentLoaded", () => {
   handleRouteChange();
+  setupSearch();
 });
 
 // Scroll infinito para cualquier llamada activa
@@ -379,10 +377,9 @@ document.addEventListener("scroll", () => {
 
 // Escuchamos cambios de hash en la URL
 window.addEventListener("hashchange", () => {
-  handleRouteChange();
-});
+  handleRouteChange();});
 
-const handleRouteChange = () => {
+  const handleRouteChange = () => {
   const route = location.hash;
 
   switch (route) {
@@ -397,14 +394,16 @@ const handleRouteChange = () => {
       seenIds.clear();
       getGames(initialURL, true);
       break;
+
+    // Añadir aqui más rutas si es necesario
   }
 };
 // Forzamos la recarga de contenido al hacer clic en "Home" aunque ya estemos en "#/"
-document.querySelectorAll('a[href="#/"]').forEach((link) => {
+document.querySelectorAll('a[href="#/"]').forEach(link => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
     if (location.hash === "#/") {
-      handleRouteChange();
+      handleRouteChange(); // Recarga manual
     } else {
       location.hash = "#/";
     }
