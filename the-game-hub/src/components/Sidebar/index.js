@@ -4,9 +4,7 @@ export function Sidebar() {
   return `
     <nav class="sidebar-nav">
       <ul>  
-        <li class="section-title">Home</li>
-
-        <li class="section-title">Reviews</li>
+        <li><a href="#/" class="navlink">Home</a></li>
 
         <li class="section-title">Releases</li>
 

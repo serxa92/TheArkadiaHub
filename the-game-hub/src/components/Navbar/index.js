@@ -3,7 +3,7 @@ import "./styles.css";
 
 export const Navbar = () => `
 <nav>
-  <a href="#" class="logo-link">
+  <a href="#/" class="logo-link">
   <img class="logo" src="/images/logo.png" alt="The Game Hub logo">
 </a>
   <ul>

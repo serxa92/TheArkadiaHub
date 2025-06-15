@@ -67,11 +67,7 @@ body.light .navlink:hover {
   cursor: pointer;
   padding: 0.5rem 1rem;
 }
-#searchBtn{
-  position: absolute;
-  right: 10px;  
-  top: 30%;
-}
+
 
 body.light .header__search__input {
   background-color: #f1f1f1;
