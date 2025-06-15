@@ -33,3 +33,32 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+#game-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.layout {
+  display: flex;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h2{
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+p{
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
