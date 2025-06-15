@@ -52,6 +52,8 @@ document.querySelector("#app").innerHTML = `
 // Inicializamos toggle de tema
 
 initThemeToggle();
+setupSearch();
+
 
 // Guardamos el valor del orden elegido por el usuario
 
