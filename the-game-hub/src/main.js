@@ -12,6 +12,8 @@ import { GameCard } from "./components/GameCard/index.js";
 import { getPlatformIcons } from "./components/GameCard/index.js";
 import { supabase } from "./supabaseClient.js";
 import { setActiveLink } from "./components/Navbar/index.js";
+import Loader from "./components/Loader/index.js";
+import "ldrs/ring";
 
 //Obtenemos la API desde las variables de entorno
 
@@ -96,6 +98,7 @@ const containsExplicitContent = (game) => {
 
 const renderGames = (games) => {
   const container = document.getElementById("game-list");
+  container.style.display = "grid";
   games.forEach((game) => {
     if (!seenIds.has(game.id) && !containsExplicitContent(game)) {
       seenIds.add(game.id);
@@ -119,7 +122,7 @@ const getFormattedDate = (date) => date.toISOString().split("T")[0];
 
 const filters = {
   best: `https://api.rawg.io/api/games?dates=2025-01-01,2025-12-31`,
-  popular: `https://api.rawg.io/api/games`,
+  popular: `https://api.rawg.io/api/games?ordering=-added`,
   top: `https://api.rawg.io/api/games?ordering=-added`,
   pc: `https://api.rawg.io/api/games?platforms=4`,
   ps: `https://api.rawg.io/api/games?platforms=18,187`,
@@ -146,7 +149,7 @@ const filters = {
     end.setDate(start.getDate() + 6);
     return `https://api.rawg.io/api/games?dates=${getFormattedDate(
       start
-    )},${getFormattedDate(end)}`;
+    )},${getFormattedDate(end)}&ordering=${currentOrdering}`;
   },
 
   //Aqui para los últimos 30 días, calculamos la fecha de hace 30 días desde hoy y la fecha de hoy
@@ -179,6 +182,7 @@ const filters = {
 const getGames = async (url, reset = false) => {
   if (isLoading) return;
   isLoading = true;
+  loader.style.display = "flex";
 
   try {
     if (reset) {
@@ -206,6 +210,7 @@ const getGames = async (url, reset = false) => {
     });
   } finally {
     isLoading = false;
+    loader.style.display = "none";
   }
 };
 
@@ -283,7 +288,6 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
       // En este caso, usamos un filtro que muestra los juegos mejor valorados del año actual
 
       case "btn-best":
-        list.style.display = "grid";
         setTitle("Best of the Year", "Top rated games released this year");
         getGames(filters.best, true);
         break;
@@ -324,6 +328,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
       // En este caso, usamos un filtro que muestra los juegos más populares en la plataforma
 
       case "btn-popular":
+        
         setTitle("Popular", "Games with the most popularity");
         getGames(filters.popular, true);
         break;
@@ -678,56 +683,61 @@ document.addEventListener("click", async (e) => {
   Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
 
   if (e.target.id === "login-submit") {
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value.trim();
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value.trim();
 
-  if (!email || !password) {
-    Swal.fire({
-      icon: "warning",
-      title: "Missing fields",
-      text: "Please enter both email and password.",
+    if (!email || !password) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing fields",
+        text: "Please enter both email and password.",
+      });
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
-    return;
-  }
+    // Si hay un error al iniciar sesión, mostramos un mensaje de error
+    if (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Login error",
+        text: error.message,
+      });
+      return;
+    }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  // Si hay un error al iniciar sesión, mostramos un mensaje de error
-  if (error) {
+    // Comprobamos si el email está confirmado
+
+    if (!data.user?.email_confirmed_at) {
+      Swal.fire({
+        icon: "warning",
+        title: "Email not confirmed",
+        text: "Please check your inbox to confirm your account.",
+      });
+      return;
+    }
+
+    // Login correcto
+
     Swal.fire({
-      icon: "error",
-      title: "Login error",
-      text: error.message,
-    });
-    return;
-  }
-
-  // Comprobamos si el email está confirmado
-
-  if (!data.user?.email_confirmed_at) {
-    Swal.fire({
-      icon: "warning",
-      title: "Email not confirmed",
-      text: "Please check your inbox to confirm your account.",
-    });
-    return;
-  }
-
-  // Login correcto
-
-  Swal.fire({
-    title: "Login successful!",
-    width: 500,
-    padding: "3em",
-    color: "#716add",
-    backdrop: `
+      title: "Login successful!",
+      width: 500,
+      padding: "3em",
+      color: "#716add",
+      backdrop: `
       rgba(0, 35, 123, 0.4)
       url("/images/cat.gif")
       left top
       no-repeat
     `,
-  });
-}
+    });
+  }
 });
+
+// Creamos el loader y lo añadimos al body
+const loader = Loader();
+document.body.appendChild(loader);
+loader.style.display = "none";

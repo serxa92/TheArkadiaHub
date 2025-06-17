@@ -17,7 +17,7 @@ export function Sidebar() {
         <li class="section-title">Top</li>
         <li><a href="#" id="btn-best"><i class="fa-solid fa-trophy fa-lg"></i> Best of the year</a></li>
         <li><a href="#" id="btn-popular"><i class="fa-solid fa-chart-line fa-lg"></i> Popular</a></li>
-        <li><a href="#" id="btn-top"><i class="fa-solid fa-chart-line fa-lg"></i> All time top</a></li>
+        <li><a href="#" id="btn-top"><i class="fa-solid fa-ranking-star fa-lg"></i> All time top</a></li>
 
 
         <li class="section-title">Platforms</li>
