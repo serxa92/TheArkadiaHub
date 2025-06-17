@@ -367,7 +367,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         setTitle("Nintendo Switch Games", "All Nintendo Switch games");
         getGames(filters.switch, true);
         break;
-        
+
       // Action Games
       // En este caso, usamos un filtro que muestra todos los juegos de acción
 
@@ -678,42 +678,56 @@ document.addEventListener("click", async (e) => {
   Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
 
   if (e.target.id === "login-submit") {
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value.trim();
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value.trim();
 
-    if (!email || !password) {
-      Swal.fire({
-        icon: "warning",
-        title: "Missing fields",
-        text: "Please enter both email and password.",
-      });
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+  if (!email || !password) {
+    Swal.fire({
+      icon: "warning",
+      title: "Missing fields",
+      text: "Please enter both email and password.",
     });
-
-    if (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Login error",
-        text: error.message,
-      });
-    } else {
-      Swal.fire({
-        title: "Login successful!",
-        width: 500,
-        padding: "3em",
-        color: "#716add",
-        backdrop: `
-    rgba(0, 35, 123, 0.4)
-    url("/images/cat.gif")
-    left top
-    no-repeat
-  `,
-      });
-    }
+    return;
   }
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  // Si hay un error al iniciar sesión, mostramos un mensaje de error
+  if (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Login error",
+      text: error.message,
+    });
+    return;
+  }
+
+  // Comprobamos si el email está confirmado
+
+  if (!data.user?.email_confirmed_at) {
+    Swal.fire({
+      icon: "warning",
+      title: "Email not confirmed",
+      text: "Please check your inbox to confirm your account.",
+    });
+    return;
+  }
+
+  // Login correcto
+
+  Swal.fire({
+    title: "Login successful!",
+    width: 500,
+    padding: "3em",
+    color: "#716add",
+    backdrop: `
+      rgba(0, 35, 123, 0.4)
+      url("/images/cat.gif")
+      left top
+      no-repeat
+    `,
+  });
+}
 });
