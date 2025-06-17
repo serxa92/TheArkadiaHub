@@ -4,7 +4,8 @@ export function Sidebar() {
   return `
     <nav class="sidebar-nav">
       <ul>  
-        <li><a href="#/" class="navlink">Home</a></li>
+        <li><a href="#/" class="navlink"><i class="fa-solid fa-house fa-lg"></i> Home</a></li>
+
 
         <li class="section-title">Releases</li>
 
@@ -16,11 +17,14 @@ export function Sidebar() {
         <li class="section-title">Top</li>
         <li><a href="#" id="btn-best"><i class="fa-solid fa-trophy fa-lg"></i> Best of the year</a></li>
         <li><a href="#" id="btn-popular"><i class="fa-solid fa-chart-line fa-lg"></i> Popular</a></li>
+        <li><a href="#" id="btn-top"><i class="fa-solid fa-chart-line fa-lg"></i> All time top</a></li>
+
 
         <li class="section-title">Platforms</li>
         <li><a href="#" id="btn-pc"><i class="fa-brands fa-windows fa-lg"></i> PC</a></li>
         <li><a href="#" id="btn-ps"><i class="fa-brands fa-playstation fa-lg"></i> Playstation</a></li>
         <li><a href="#" id="btn-xbox"><i class="fa-brands fa-xbox fa-lg"></i> Xbox One</a></li>
+        <li><a href="#" id="btn-switch"><i class="fa-solid fa-gamepad fa-lg"></i> Nintendo Switch</a></li>
 
         <li class="section-title">Genres</li>
         <li><a href="#" id="btn-free">Free Online Games</a></li>

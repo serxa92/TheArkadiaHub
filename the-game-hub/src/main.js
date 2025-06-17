@@ -1,5 +1,6 @@
-import "./style.css";
+//IMPORTACIONES
 
+import "./style.css";
 import { Navbar } from "./components/Navbar/index.js";
 import { Sidebar } from "./components/Sidebar/index.js";
 import {
@@ -8,25 +9,27 @@ import {
 } from "./components/ThemeToogle/index.js";
 import Swal from "sweetalert2";
 import { GameCard } from "./components/GameCard/index.js";
+import { getPlatformIcons } from "./components/GameCard/index.js";
+import { supabase } from "./supabaseClient.js";
+import { setActiveLink } from "./components/Navbar/index.js";
+
+//Obtenemos la API desde las variables de entorno
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
-// Variables para controlar la paginación y el estado de carga
+// VARIABLES GLOBALES
 
 let currentPage = 1;
 let isLoading = false;
-let currentURL = "";
-// Orden por defecto en el que se muestran los juegos
-let currentOrdering = "-rating";
-// Impedimos que se repitan los juegos ya vistos
-let seenIds = new Set();
-// Lista de juegos actualmente cargados
-let currentGames = [];
+let currentURL = ""; // Evitamos cargar juegos al iniciar sesión o registrarse
+let currentOrdering = "-rating"; // Orden por defecto en el que se muestran los juegos
+let seenIds = new Set(); // Impedimos que se repitan los juegos ya vistos
+let currentGames = []; // Lista de juegos actualmente cargados
 
-// Aplicamos el tema guardado
+// Aplicamos el tema guardado (modo oscuro/claro)
 applySavedTheme();
 
-// Pintamos estructura inicial
+// Pintamos estructura inicial de la aplicación
 
 document.querySelector("#app").innerHTML = `
   <header>${Navbar()}</header>
@@ -49,11 +52,13 @@ document.querySelector("#app").innerHTML = `
   </section>
 `;
 
-// Inicializamos toggle de tema
+//  Inicializamos el toggle de tema (oscuro/claro)
 
 initThemeToggle();
 
-// Guardamos el valor del orden elegido por el usuario
+/* Evento para actualizar el orden de los juegos según selección del usuario
+Al cambiar el orden, reiniciamos la lista de juegos y volvemos a cargar los juegos
+desde la URL actual con el nuevo orden seleccionado */
 
 document.addEventListener("change", (e) => {
   if (e.target.id === "order-select") {
@@ -63,34 +68,63 @@ document.addEventListener("change", (e) => {
   }
 });
 
-// Función para renderizar los juegos en el DOM
+/*  Función para detectar contenido explícito en los juegos
+ Esta función revisa el nombre, slug y etiquetas del juego para detectar palabras clave explícitas.
+*/
+
+const containsExplicitContent = (game) => {
+  const keywords = [
+    "sex",
+    "sexual",
+    "hentai",
+    "futanari",
+    "incest",
+    "nudity",
+    "nsfw",
+  ];
+  const text = (
+    game.name +
+    " " +
+    (game.slug || "") +
+    " " +
+    (game.tags?.map((t) => t.name).join(" ") || "")
+  ).toLowerCase();
+  return keywords.some((keyword) => text.includes(keyword));
+};
+
+// Función para renderizar los juegos evitando duplicados y contenido explícito
 
 const renderGames = (games) => {
   const container = document.getElementById("game-list");
   games.forEach((game) => {
-    if (!seenIds.has(game.id)) {
+    if (!seenIds.has(game.id) && !containsExplicitContent(game)) {
       seenIds.add(game.id);
       container.innerHTML += GameCard(game);
     }
   });
 };
 
-// Cambiamos los títulos dinámicamente
+// Cambiamos los títulos principales dinámicamente
+
 const setTitle = (title, subtitle) => {
   document.getElementById("main-title").textContent = title;
   document.getElementById("main-subtitle").textContent = subtitle;
 };
 
-// Funciones auxiliares de fecha
+// Función auxiliar para dar formato a fechas YYYY-MM-DD
+
 const getFormattedDate = (date) => date.toISOString().split("T")[0];
 
 // Almacenamos las urls de los filtros
+
 const filters = {
   best: `https://api.rawg.io/api/games?dates=2025-01-01,2025-12-31`,
   popular: `https://api.rawg.io/api/games`,
+  top: `https://api.rawg.io/api/games?ordering=-added`,
   pc: `https://api.rawg.io/api/games?platforms=4`,
   ps: `https://api.rawg.io/api/games?platforms=18,187`,
   xbox: `https://api.rawg.io/api/games?platforms=1`,
+  switch: `https://api.rawg.io/api/games?platforms=7`,
   action: `https://api.rawg.io/api/games?genres=action`,
   rpg: `https://api.rawg.io/api/games?genres=role-playing-games-rpg`,
   shooter: `https://api.rawg.io/api/games?genres=shooter`,
@@ -104,6 +138,7 @@ const filters = {
 
   // Funciones para obtener las URLs de los filtros dinámicamente
 
+  // Aquí para esta semana, calculamos la fecha de inicio (lunes) y fin (domingo) de la semana actual
   thisWeek: () => {
     const today = new Date();
     const start = new Date(today.setDate(today.getDate() - today.getDay()));
@@ -113,6 +148,9 @@ const filters = {
       start
     )},${getFormattedDate(end)}`;
   },
+
+  //Aqui para los últimos 30 días, calculamos la fecha de hace 30 días desde hoy y la fecha de hoy
+
   last30: () => {
     const today = new Date();
     const lastMonth = new Date();
@@ -121,6 +159,8 @@ const filters = {
       lastMonth
     )},${getFormattedDate(today)}`;
   },
+
+  // Aquí para la próxima semana, calculamos la fecha de inicio (lunes) y fin (domingo) de la próxima semana
   nextWeek: () => {
     const today = new Date();
     const nextMonday = new Date(
@@ -135,6 +175,7 @@ const filters = {
 };
 
 // Aquí llamamos a la API para obtener los juegos
+
 const getGames = async (url, reset = false) => {
   if (isLoading) return;
   isLoading = true;
@@ -156,8 +197,8 @@ const getGames = async (url, reset = false) => {
     renderGames(data.results);
     currentPage++;
   } catch (error) {
-    // Usamos la libreria SweetAlert2 para mostrar un mensaje de error
     Swal.fire({
+      // Usamos la libreria SweetAlert2 para mostrar un mensaje de error
       icon: "error",
       theme: "dark",
       title: "Oops...",
@@ -168,57 +209,64 @@ const getGames = async (url, reset = false) => {
   }
 };
 
-// Evento de búsqueda con botón y Enter
+// Evento de búsqueda con Enter
+
 const setupSearch = () => {
   const input = document.getElementById("searchInput");
-  const button = document.getElementById("searchBtn");
   const list = document.getElementById("game-list");
 
   // Intentamos buscar un juego, si no se encuentra, buscamos por slug, que es una forma de identificar juegos por su nombre amigable en la URL
 
- const searchGames = async () => {
-  const query = input.value.trim();
-  if (!query) return;
+  const searchGames = async () => {
+    const query = input.value.trim();
+    if (!query) return;
 
-  list.innerHTML = "";
+    const list = document.getElementById("game-list");
+    list.innerHTML = "";
+    list.style.display = "grid";
 
-  const url = `https://api.rawg.io/api/games?search=${encodeURIComponent(query)}&search_precise=true&key=${API_KEY}`;
+    const baseURL = `https://api.rawg.io/api/games`;
+    const url = `${baseURL}?search=${encodeURIComponent(
+      query
+    )}&search_precise=true&key=${API_KEY}`;
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
 
-    if (data.results.length > 0) {
+      // Limpiamos los juegos vistos para evitar duplicados
       seenIds.clear();
-      renderGames(data.results);
-      return;
+
+      // Si hay resultados, los renderizamos
+      if (data.results.length > 0) {
+        renderGames(data.results);
+        return;
+      }
+
+      // Si no hay resultados, buscamos por slug
+      const fallbackSlug = normalizeToSlug(query);
+      const slugUrl = `${baseURL}/${fallbackSlug}?key=${API_KEY}`;
+
+      const slugRes = await fetch(slugUrl);
+
+      // Si la búsqueda por slug falla, mostramos un mensaje de error
+      if (!slugRes.ok) throw new Error("Juego no encontrado por slug");
+
+      const fallbackGame = await slugRes.json();
+      renderGames([fallbackGame]);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        theme: "dark",
+        title: "No results",
+        text: `No game found for "${query}".`,
+      });
     }
+  };
 
-    //Si no hay resultados, intentamos buscar por slug
-    const fallbackSlug = normalizeToSlug(query);
-    const slugUrl = `https://api.rawg.io/api/games/${fallbackSlug}?key=${API_KEY}`;
-
-    const slugRes = await fetch(slugUrl);
-
-    if (!slugRes.ok) throw new Error("Juego no encontrado por slug");
-
-    const fallbackGame = await slugRes.json();
-
-    seenIds.clear();
-    renderGames([fallbackGame]);
-
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      theme: "dark",
-      title: "No results",
-      text: `No game found for "${query}".`,
-    });
-  }
-};
-  
   // Ejecutamos la busqueda al pulsar Enter en el input
   input?.addEventListener("keydown", (e) => {
+    // Comprobamos si la tecla pulsada es Enter y si es asi, ejecuta la función de búsqueda
     if (e.key === "Enter") searchGames();
   });
 };
@@ -232,13 +280,16 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
     const id = e.target.id;
     switch (id) {
       //Best of the year
+      // En este caso, usamos un filtro que muestra los juegos mejor valorados del año actual
 
       case "btn-best":
+        list.style.display = "grid";
         setTitle("Best of the Year", "Top rated games released this year");
         getGames(filters.best, true);
         break;
 
       //This week
+      // En este caso, usamos un filtro que muestra los juegos lanzados esta semana
 
       case "btn-thisweek":
         setTitle("This Week", "Fresh releases for this week");
@@ -246,6 +297,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Last 30 days
+      // En este caso, usamos un filtro que muestra los juegos lanzados en los últimos 30 días
 
       case "btn-last30":
         setTitle("Last 30 Days", "Top games from the past 30 days");
@@ -253,6 +305,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Next week
+      // En este caso, usamos un filtro que muestra los juegos que se lanzarán la próxima semana
 
       case "btn-nextweek":
         setTitle("Next Week", "Games releasing next week");
@@ -260,6 +313,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Release calendar
+      // En este caso , usamos un filtro que muestra los juegos que se lanzarán en los próximos meses
 
       case "btn-calendar":
         setTitle("Release Calendar", "All upcoming releases");
@@ -267,13 +321,23 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Popular
+      // En este caso, usamos un filtro que muestra los juegos más populares en la plataforma
 
       case "btn-popular":
         setTitle("Popular", "Games with the most popularity");
         getGames(filters.popular, true);
         break;
 
+      // All time top
+      // En este caso, usamos un filtro que muestra los juegos más añadidos por los usuarios
+
+      case "btn-top":
+        setTitle("All Time Top", "Most added games by users");
+        getGames(filters.top, true);
+        break;
+
       // PC Games
+      // En este caso, usamos un filtro que muestra todos los juegos de la plataforma PC
 
       case "btn-pc":
         setTitle("PC Games", "All PC platform games");
@@ -281,6 +345,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // PlayStation Games
+      // En este caso, usamos un filtro que muestra todos los juegos de la plataforma PlayStation
 
       case "btn-ps":
         setTitle("PlayStation Games", "All Playstation games");
@@ -288,13 +353,23 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Xbox Games
+      // En este caso, usamos un filtro que muestra todos los juegos de la plataforma Xbox One
 
       case "btn-xbox":
         setTitle("Xbox One Games", "All Xbox One games");
         getGames(filters.xbox, true);
         break;
 
+      // Nintendo Switch Games
+      // En este caso, usamos un filtro que muestra todos los juegos de la plataforma Nintendo Switch
+
+      case "btn-switch":
+        setTitle("Nintendo Switch Games", "All Nintendo Switch games");
+        getGames(filters.switch, true);
+        break;
+        
       // Action Games
+      // En este caso, usamos un filtro que muestra todos los juegos de acción
 
       case "btn-action":
         setTitle("Action Games", "Explore the best action-packed titles");
@@ -302,6 +377,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // RPG Games
+      // En este caso, usamos un filtro que muestra todos los juegos de rol
 
       case "btn-rpg":
         setTitle("RPG Games", "Top role-playing experiences");
@@ -309,6 +385,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Shooter Games
+      // En este caso, usamos un filtro que muestra todos los juegos de disparos en primera y tercera persona
 
       case "btn-shooter":
         setTitle("Shooter Games", "Best FPS and TPS games");
@@ -316,6 +393,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Strategy Games
+      // En este caso, usamos un filtro que muestra todos los juegos de estrategia y táctica
 
       case "btn-strategy":
         setTitle("Strategy Games", "Top strategic and tactical games");
@@ -323,6 +401,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Adventure Games
+      // En este caso, usamos un filtro que muestra todos los juegos de aventura
 
       case "btn-adventure":
         setTitle("Adventure Games", "Discover epic adventures");
@@ -330,6 +409,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Racing Games
+      // En este caso, usamos un filtro que muestra todos los juegos de carreras
 
       case "btn-racing":
         setTitle("Racing Games", "Fast-paced racing experiences");
@@ -337,6 +417,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Sports Games
+      // En este caso, usamos un filtro que muestra todos los juegos de deportes
 
       case "btn-sports":
         setTitle("Sports Games", "Popular sports simulations");
@@ -344,6 +425,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Puzzle Games
+      // En este caso, usamos un filtro que muestra todos los juegos de rompecabezas y lógica
 
       case "btn-puzzle":
         setTitle("Puzzle Games", "Brain teasers and logic challenges");
@@ -351,6 +433,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
         break;
 
       // Free Online Games
+      // En este caso, usamos un filtro que muestra todos los juegos gratuitos en línea
 
       case "btn-free":
         setTitle("Free Online Games", "Free-to-play online titles");
@@ -361,51 +444,276 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 });
 
 // Carga inicial
+
 document.addEventListener("DOMContentLoaded", () => {
+  /*   Usamos la función handleRouteChange para cargar la página inicial
+  y configurar el título y subtítulo iniciales */
+
   handleRouteChange();
   setupSearch();
 });
 
 // Scroll infinito para cualquier llamada activa
+
 document.addEventListener("scroll", () => {
+  /*   Verificamos si estamos en la vista de detalle del juego
+  y si estamos cerca del final de la página para cargar más juegos */
+
+  const isDetailView = location.hash.startsWith("#/game/");
   const nearBottom =
     window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
-  if (nearBottom && currentURL) {
+
+  // Solo ejecutamos el scroll infinito si no estamos en la vista de detalle
+
+  if (!isDetailView && nearBottom && currentURL) {
     getGames(currentURL, false);
   }
 });
 
-// Escuchamos cambios de hash en la URL
+// Escuchamos cambios de hash (página) en la URL
+
 window.addEventListener("hashchange", () => {
-  handleRouteChange();});
+  handleRouteChange();
+  setActiveLink();
+});
 
-  const handleRouteChange = () => {
+// Funcion para controlar el cambio de ruta y cargar el contenido adecuado
+
+const handleRouteChange = () => {
   const route = location.hash;
+  const container = document.getElementById("game-list");
+  container.style.display = "grid";
 
-  switch (route) {
-    case "#/":
-    default:
-      setTitle(
-        "Welcome to The Game Hub",
-        "Discover the latest and most popular games right now."
-      );
-      const initialURL = `https://api.rawg.io/api/games/lists/main?discover=true`;
-      currentURL = initialURL;
-      seenIds.clear();
-      getGames(initialURL, true);
-      break;
+  // Si la ruta es un detalle de juego
 
-    // Añadir aqui más rutas si es necesario
+  if (route.startsWith("#/game/")) {
+    // Extraemos el ID del juego de la ruta por que la ruta es del tipo #/game/{id}
+    const gameId = route.split("/")[2];
+    if (gameId) loadGameDetail(gameId);
+    return;
+  }
+  // Página de Login
+  if (route === "#/login") {
+    renderLoginForm();
+    return;
+  }
+
+  // Página de Registro
+  if (route === "#/signup") {
+    renderSignUpForm();
+    return;
+  }
+
+  // Página principal (Home)
+
+  setTitle(
+    "Welcome to The Game Hub",
+    "Discover the latest and most popular games right now."
+  );
+  document.getElementById("main-subtitle").style.display = "block";
+  document.querySelector(".filters").style.display = "block";
+
+  const initialURL = `https://api.rawg.io/api/games/lists/main?discover=true`;
+  currentURL = initialURL;
+  seenIds.clear();
+  getGames(initialURL, true);
+};
+
+//Esta función se encarga de hacer una petición a la API para obtener los detalles de un juego específico
+
+const loadGameDetail = async (id) => {
+  try {
+    const res = await fetch(
+      `https://api.rawg.io/api/games/${id}?key=${API_KEY}`
+    );
+    const game = await res.json();
+    const container = document.getElementById("game-list");
+    container.style.display = "block";
+    // Limpiamos el contenido previo y  mostramos los detalles del juego
+    container.innerHTML = `
+  <div class="detail-view">
+    <img src="${game.background_image}" alt="${game.name} cover" />
+    <div class="detail-info">
+    <span class="platforms">${getPlatformIcons(game.platforms)}</span>
+    <h2>${game.name}</h2>
+    <p class="description">${
+      game.description_raw || "No description available."
+    }</p>
+      <div class="meta">
+        
+      </div>
+      <button class="back-btn" id="goBack"><i>⬅</i> Back</button>
+    </div>
+  </div>
+`;
+    // Actualizamos el título y subtítulo de la página
+    document.getElementById("main-title").textContent = game.name;
+    document.getElementById("main-subtitle").textContent = "";
+
+    /* Añadimos el evento para volver atrás
+    Al hacer clic en el botón "Back", volvemos a la página principal
+     Esto cambia el hash a "#/" para que se recargue la página principal
+    y se muestren los juegos de nuevo */
+
+    document.getElementById("goBack").addEventListener("click", () => {
+      location.hash = "#/";
+    });
+  } catch (error) {
+    // Si hay un error al cargar los detalles del juego, mostramos un mensaje de error
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Game details could not be loaded.",
+    });
   }
 };
-// Forzamos la recarga de contenido al hacer clic en "Home" aunque ya estemos en "#/"
-document.querySelectorAll('a[href="#/"]').forEach(link => {
+// Evento para manejar clics en las tarjetas de juego
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".game-card");
+  if (card) {
+    const id = card.dataset.id;
+    if (id) location.hash = `#/game/${id}`;
+  }
+});
+
+/* Forzamos la recarga de contenido al hacer clic en "Home" aunque ya estemos en "#/" por que al ser  un SPA, 
+no recarga la página */
+
+document.querySelectorAll('a[href="#/"]').forEach((link) => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
     if (location.hash === "#/") {
-      handleRouteChange(); // Recarga manual
+      handleRouteChange();
     } else {
       location.hash = "#/";
     }
   });
+});
+
+//Funcion para renderizar el formulario de inicio de sesión
+
+const renderLoginForm = () => {
+  //Evitamos que se carguen los juegos al hacer scroll
+  currentURL = "";
+  const container = document.getElementById("game-list");
+  container.style.display = "block";
+  document.getElementById("main-title").innerHTML = "Sign Up";
+  document.getElementById("main-subtitle").style.display = "none";
+  document.querySelector(".filters").style.display = "none";
+
+  container.innerHTML = `
+    <div class="auth-form">
+      <h2>Log In</h2>
+      <input type="email" id="login-email" placeholder="Email" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <button id="login-submit">Log In</button>
+    </div>
+  `;
+};
+
+// Funcion para renderizar el formulario de registro
+const renderSignUpForm = () => {
+  //Evitamos que se carguen los juegos al hacer scroll
+  currentURL = "";
+  const container = document.getElementById("game-list");
+  container.style.display = "block";
+  document.getElementById("main-title").innerHTML = "Sign Up";
+  document.getElementById("main-subtitle").style.display = "none";
+  document.querySelector(".filters").style.display = "none";
+
+  container.innerHTML = `
+    <div class="auth-form">
+      <h2>Sign Up</h2>
+      <input type="email" id="signup-email" placeholder="Email" />
+      <input type="password" id="signup-password" placeholder="Password" />
+      <button id="signup-submit">Create Account</button>
+    </div>
+  `;
+};
+
+/* Controlamos si el usuario deja los campos de email o contraseña vacíos al crear una cuenta,si es así, mostramos un mensaje de advertencia.
+Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
+
+document.addEventListener("click", async (e) => {
+  if (e.target.id === "signup-submit") {
+    const email = document.getElementById("signup-email").value.trim();
+    const password = document.getElementById("signup-password").value.trim();
+
+    // Validamos los campos antes de enviar la petición
+    if (!email || !password) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing fields",
+        text: "Please enter both email and password.",
+      });
+      return;
+    }
+
+    const { error } = await supabase.auth.signUp({ email, password });
+
+    if (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Sign-up error",
+        text: error.message,
+      });
+    } else {
+      // Mensaje de éxito personalizado con tu gif
+      Swal.fire({
+        title: "Account created successfully!",
+        text: "Check your email to confirm your account.",
+        width: 500,
+        padding: "3em",
+        color: "#716add",
+        backdrop: `
+          rgba(0,0,123,0.4)
+          url("/images/cat.gif")
+          left top
+          no-repeat
+        `,
+      });
+    }
+  }
+  /* Controlamos si el usuario deja los campos de email o contraseña vacíos al iniciar sesión,si es así, mostramos un mensaje de advertencia.
+  Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
+
+  if (e.target.id === "login-submit") {
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value.trim();
+
+    if (!email || !password) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing fields",
+        text: "Please enter both email and password.",
+      });
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Login error",
+        text: error.message,
+      });
+    } else {
+      Swal.fire({
+        title: "Login successful!",
+        width: 500,
+        padding: "3em",
+        color: "#716add",
+        backdrop: `
+    rgba(0, 35, 123, 0.4)
+    url("/images/cat.gif")
+    left top
+    no-repeat
+  `,
+      });
+    }
+  }
 });

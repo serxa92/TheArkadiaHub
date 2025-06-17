@@ -11,7 +11,7 @@ const platformIcons = {
 };
 
 // Esta función toma parent_platforms y devuelve HTML de iconos
-const getPlatformIcons = (platforms) => {
+export const getPlatformIcons = (platforms) => {
   if (!Array.isArray(platforms)) return "";
 
   // Mapeamos los nombres de las plataformas a los iconos
@@ -45,15 +45,15 @@ const getPlatformIcons = (platforms) => {
 export const GameCard = (game) => {
   return `
     
-      <div class="game-card">
+      <div class="game-card" data-id="${game.id}">
         <img src="${game.background_image}" alt="${game.name}" />
         <div class="game-info">
           <div class="platform-icons">
-            ${getPlatformIcons(game.platforms)}
+            <p>${getPlatformIcons(game.platforms)}</p><p>⭐ ${game.rating ?? "N/A"}</p>
           </div>
-          <h3>${game.name}</h3>
+          <h3 >${game.name}</h3>
           <div class="extra-info">
-            <p><strong>Rating:</strong> ⭐ ${game.rating ?? "N/A"}</p>
+            
             <p><strong>Release date:</strong> ${game.released ?? "N/A"}</p>
           </div>
         </div>

@@ -12,18 +12,17 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 body.light {
   background-color: white;
   color: black;
-  transition: color 0.5s ease-in-out;
 }
 
 body.dark {
   background-color: #202021;
   color: white;
-  transition: color 0.5s ease-in-out;
 }
 
 html {
@@ -54,11 +53,138 @@ a {
   margin: 0 auto;
 }
 
-h2{
+h2 {
   font-size: 4rem;
   margin-bottom: 1rem;
 }
-p{
+p {
   font-size: 1.2rem;
   margin-bottom: 1rem;
+}
+
+.detail-view {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  margin: 3rem auto;
+  
+}
+.platforms{
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+.detail-view img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: 2rem;
+}
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 2rem;
+
+  
+  
+}
+.description {
+  font-size: 1.5rem;
+ 
+}
+.detail-info h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  
+}
+
+.meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn {
+  margin-top: 2rem;
+  align-self: center;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 0.6rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+  background: linear-gradient(to right, #2575fc, #6a11cb);
+}
+
+.auth-form {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.auth-form h2 {
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.auth-form input {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: background-color 0.5s ease-in-out;
+}
+
+.auth-form button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(to right, var(--color-accent), #2575fc);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.auth-form button:hover {
+  background: linear-gradient(to right, #2575fc, var(--color-accent));
+  border: 1px solid black;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

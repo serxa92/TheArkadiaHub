@@ -14,9 +14,24 @@ export const Navbar = () => `
 
       </div>
     </li>
-    <li><a class="navlink" href="#">LOG IN</a></li>
-    <li><a class="navlink" href="#">SIGN UP</a></li>
+    <li><a class="navlinkk" href="#/login" id="btn-login">LOG IN</a></li>
+    <li><a class="navlinkk" href="#/signup" id="btn-signup">SIGN UP</a></li>
+
     <li>${createThemeToggle()}</li>
   </ul>
 </nav>
 `;
+export const setActiveLink = () => {
+  const links = document.querySelectorAll(".navlinkk");
+  links.forEach(link => {
+    const href = link.getAttribute("href");
+    if (href === location.hash) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
+};
+
+
+
