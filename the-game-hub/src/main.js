@@ -38,7 +38,7 @@ document.querySelector("#app").innerHTML = `
   <section class="layout">
     <aside class="sidebar">${Sidebar()}</aside>
     <main class="main-content">
-      <h2 id="main-title">Welcome to The Game Hub</h2>
+      <h2 id="main-title">Welcome to Arkadia</h2>
       <p id="main-subtitle">Discover the latest and most popular games right now.</p>
       <div class="filters">
         <label for="order-select">Order by:</label>
@@ -512,7 +512,7 @@ const handleRouteChange = () => {
   // Página principal (Home)
 
   setTitle(
-    "Welcome to The Game Hub",
+    "Welcome to Arkadia",
     "Discover the latest and most popular games right now."
   );
   document.getElementById("main-subtitle").style.display = "block";
