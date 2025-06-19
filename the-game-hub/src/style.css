@@ -236,3 +236,14 @@ body.light select {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.genres {
+  margin-top: 1rem;
+}
+.tag {
+ 
+  border-radius: 12px;
+  padding: 4px 12px;
+  
+  font-size: 0.8rem;
+}

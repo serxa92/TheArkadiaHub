@@ -14,6 +14,10 @@ import { supabase } from "./supabaseClient.js";
 import { setActiveLink } from "./components/Navbar/index.js";
 import Loader from "./components/Loader/index.js";
 import "ldrs/ring";
+import { LoginForm } from "./components/Auth/Login/LoginForm.js";
+import { setupLoginHandler } from "./components/Auth/Login/handleLogin.js";
+import { SignUpForm } from "./components/Auth/Signup/SignUpForm.js";
+import { setupSignUpHandler } from "./components/Auth/Signup/handleSignUp.js";
 
 //Obtenemos la API desde las variables de entorno
 
@@ -57,6 +61,11 @@ document.querySelector("#app").innerHTML = `
 //  Inicializamos el toggle de tema (oscuro/claro)
 
 initThemeToggle();
+
+//Inicializamos el manejador de eventos de inicio de sesión
+setupLoginHandler();
+// Inicializamos el manejador de eventos de registro
+setupSignUpHandler();
 
 /* Evento para actualizar el orden de los juegos según selección del usuario
 Al cambiar el orden, reiniciamos la lista de juegos y volvemos a cargar los juegos
@@ -328,7 +337,6 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
       // En este caso, usamos un filtro que muestra los juegos más populares en la plataforma
 
       case "btn-popular":
-        
         setTitle("Popular", "Games with the most popularity");
         getGames(filters.popular, true);
         break;
@@ -539,18 +547,42 @@ const loadGameDetail = async (id) => {
   <div class="detail-view">
     <img src="${game.background_image}" alt="${game.name} cover" />
     <div class="detail-info">
-    <span class="platforms">${getPlatformIcons(game.platforms)}</span>
-    <h2>${game.name}</h2>
-    <p class="description">${
-      game.description_raw || "No description available."
-    }</p>
+      <span class="platforms">${getPlatformIcons(game.platforms)}</span>
+      <h2>${game.name}</h2>
+      <p class="description">${
+        game.description_raw || "No description available."
+      }</p>
+      
       <div class="meta">
+        <p><strong>Developer:</strong> ${
+          game.developers?.map((dev) => dev.name).join(", ") || "Unknown"
+        }</p>
+        <p><strong>Publisher:</strong> ${
+          game.publishers?.map((pub) => pub.name).join(", ") || "Unknown"
+        }</p>
+        <p><strong>Genres:</strong> ${
+          game.genres?.map((g) => g.name).join(", ") || "Unknown"
+        }</p>
+        <p><strong>Tags:</strong> ${
+          game.tags
+            ?.slice(0, 5)
+            .map((tag) => tag.name)
+            .join(", ") || "None"
+        }</p>
+        <p><strong>Release date:</strong> ${game.released || "N/A"}</p>
+        ${
+          game.website
+            ? `<p><strong>Official site:</strong> <a href="${game.website}" target="_blank">${game.website}</a></p>`
+            : ""
+        }
+        
         
       </div>
       <button class="back-btn" id="goBack"><i>⬅</i> Back</button>
     </div>
   </div>
 `;
+
     // Actualizamos el título y subtítulo de la página
     document.getElementById("main-title").textContent = game.name;
     document.getElementById("main-subtitle").textContent = "";
@@ -598,27 +630,18 @@ document.querySelectorAll('a[href="#/"]').forEach((link) => {
 //Funcion para renderizar el formulario de inicio de sesión
 
 const renderLoginForm = () => {
-  //Evitamos que se carguen los juegos al hacer scroll
   currentURL = "";
   const container = document.getElementById("game-list");
   container.style.display = "block";
-  document.getElementById("main-title").innerHTML = "Sign Up";
+  document.getElementById("main-title").innerHTML = "Log In";
   document.getElementById("main-subtitle").style.display = "none";
   document.querySelector(".filters").style.display = "none";
 
-  container.innerHTML = `
-    <div class="auth-form">
-      <h2>Log In</h2>
-      <input type="email" id="login-email" placeholder="Email" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <button id="login-submit">Log In</button>
-    </div>
-  `;
+  container.innerHTML = LoginForm();
 };
 
 // Funcion para renderizar el formulario de registro
 const renderSignUpForm = () => {
-  //Evitamos que se carguen los juegos al hacer scroll
   currentURL = "";
   const container = document.getElementById("game-list");
   container.style.display = "block";
@@ -626,116 +649,8 @@ const renderSignUpForm = () => {
   document.getElementById("main-subtitle").style.display = "none";
   document.querySelector(".filters").style.display = "none";
 
-  container.innerHTML = `
-    <div class="auth-form">
-      <h2>Sign Up</h2>
-      <input type="email" id="signup-email" placeholder="Email" />
-      <input type="password" id="signup-password" placeholder="Password" />
-      <button id="signup-submit">Create Account</button>
-    </div>
-  `;
+  container.innerHTML = SignUpForm();
 };
-
-/* Controlamos si el usuario deja los campos de email o contraseña vacíos al crear una cuenta,si es así, mostramos un mensaje de advertencia.
-Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
-
-document.addEventListener("click", async (e) => {
-  if (e.target.id === "signup-submit") {
-    const email = document.getElementById("signup-email").value.trim();
-    const password = document.getElementById("signup-password").value.trim();
-
-    // Validamos los campos antes de enviar la petición
-    if (!email || !password) {
-      Swal.fire({
-        icon: "warning",
-        title: "Missing fields",
-        text: "Please enter both email and password.",
-      });
-      return;
-    }
-
-    const { error } = await supabase.auth.signUp({ email, password });
-
-    if (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Sign-up error",
-        text: error.message,
-      });
-    } else {
-      // Mensaje de éxito personalizado con tu gif
-      Swal.fire({
-        title: "Account created successfully!",
-        text: "Check your email to confirm your account.",
-        width: 500,
-        padding: "3em",
-        color: "#716add",
-        backdrop: `
-          rgba(0,0,123,0.4)
-          url("/images/cat.gif")
-          left top
-          no-repeat
-        `,
-      });
-    }
-  }
-  /* Controlamos si el usuario deja los campos de email o contraseña vacíos al iniciar sesión,si es así, mostramos un mensaje de advertencia.
-  Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
-
-  if (e.target.id === "login-submit") {
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value.trim();
-
-    if (!email || !password) {
-      Swal.fire({
-        icon: "warning",
-        title: "Missing fields",
-        text: "Please enter both email and password.",
-      });
-      return;
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    // Si hay un error al iniciar sesión, mostramos un mensaje de error
-    if (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Login error",
-        text: error.message,
-      });
-      return;
-    }
-
-    // Comprobamos si el email está confirmado
-
-    if (!data.user?.email_confirmed_at) {
-      Swal.fire({
-        icon: "warning",
-        title: "Email not confirmed",
-        text: "Please check your inbox to confirm your account.",
-      });
-      return;
-    }
-
-    // Login correcto
-
-    Swal.fire({
-      title: "Login successful!",
-      width: 500,
-      padding: "3em",
-      color: "#716add",
-      backdrop: `
-      rgba(0, 35, 123, 0.4)
-      url("/images/cat.gif")
-      left top
-      no-repeat
-    `,
-    });
-  }
-});
 
 // Creamos el loader y lo añadimos al body
 const loader = Loader();

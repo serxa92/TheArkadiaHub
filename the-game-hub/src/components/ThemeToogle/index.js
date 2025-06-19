@@ -7,6 +7,7 @@ export function applySavedTheme() {
   document.body.classList.add(theme);
 }
 
+// Crea el interruptor de tema como un elemento HTML
 
 export function createThemeToggle() {
   return `<div class="switch">

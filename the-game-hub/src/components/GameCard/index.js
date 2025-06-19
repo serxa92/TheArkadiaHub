@@ -1,6 +1,6 @@
 import "./styles.css";
 
-// Iconos según la plataforma general
+// Aqui definimos los iconos de las plataformas, usando Font Awesome
 const platformIcons = {
   PC: '<i class="fa-brands fa-windows"></i>',
   PlayStation: '<i class="fa-brands fa-playstation"></i>',
@@ -10,7 +10,8 @@ const platformIcons = {
   Nintendo: '<i class="fa-solid fa-gamepad"></i>',
 };
 
-// Esta función toma parent_platforms y devuelve HTML de iconos
+// Aquí definimos la función que obtiene los iconos de las plataformas
+
 export const getPlatformIcons = (platforms) => {
   if (!Array.isArray(platforms)) return "";
 
@@ -29,14 +30,16 @@ export const getPlatformIcons = (platforms) => {
     "Nintendo Switch": "Nintendo",
     "Nintendo": "Nintendo"
   };
+  
   // Filtramos los nombres de las plataformas 
 
   const names = platforms
     .map((p) => nameMap[p?.platform?.name])
     .filter(Boolean);
 
-  const unique = [...new Set(names)];
+  // Eliminamos duplicados usando un Set y luego convertimos de nuevo a un array
 
+  const unique = [...new Set(names)];
   return unique.map((name) => platformIcons[name] ?? "").join(" ");
 };
 
