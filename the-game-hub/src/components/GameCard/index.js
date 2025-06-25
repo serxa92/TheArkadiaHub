@@ -1,5 +1,5 @@
 import "./styles.css";
-import { supabase } from "../../supabaseClient.js"; // Ajusta el path si es necesario
+import { supabase } from "../../supabaseClient.js"; 
 
 
 
