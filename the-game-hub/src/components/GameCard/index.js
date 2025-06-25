@@ -1,4 +1,8 @@
 import "./styles.css";
+import { supabase } from "../../supabaseClient.js"; // Ajusta el path si es necesario
+
+
+
 
 // Aqui definimos los iconos de las plataformas, usando Font Awesome
 const platformIcons = {
@@ -45,22 +49,32 @@ export const getPlatformIcons = (platforms) => {
 
 
 // Genera la tarjeta de juego
-export const GameCard = (game) => {
+export const GameCard = async (game) => {
+  // Obtenemos la sesión actual del usuario para verificar si está logueado
+  const { data: { session } } = await supabase.auth.getSession();
+// Verificamos si el usuario está logueado
+  const isLoggedIn = !!session?.user;
+
   return `
-    
-      <div class="game-card" data-id="${game.id}">
-        <img src="${game.background_image}" alt="${game.name}" />
-        <div class="game-info">
-          <div class="platform-icons">
-            <p>${getPlatformIcons(game.platforms)}</p><p>⭐ ${game.rating ?? "N/A"}</p>
-          </div>
-          <h3 >${game.name}</h3>
-          <div class="extra-info">
-            
-            <p><strong>Release date:</strong> ${game.released ?? "N/A"}</p>
-          </div>
+    <div class="game-card" data-id="${game.id}">
+      <img src="${game.background_image}" alt="${game.name}" />
+      <div class="game-info">
+        <div class="platform-icons">
+          <p>${getPlatformIcons(game.platforms)}</p><p>⭐ ${game.rating ?? "N/A"}</p>
         </div>
+        <h3>${game.name}</h3>
+        <div class="extra-info">
+          <p><strong>Release Date:</strong> ${game.released ?? "N/A"}</p>
+        </div>
+        ${isLoggedIn
+  ? `<button class="wishlist-btn" 
+        data-id="${game.id}" 
+        data-name="${game.name}" 
+        data-image="${game.background_image}"
+        title="Add to Wishlist">
+        Add to Wishlist</button>`
+  : ""}
       </div>
-    
+    </div>
   `;
 };

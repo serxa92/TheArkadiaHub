@@ -3,13 +3,12 @@ import { supabase } from "../../../supabaseClient.js";
 
 export const setupLoginHandler = () => {
   document.addEventListener("click", async (e) => {
-    /* Controlamos si el usuario deja los campos de email o contraseña vacíos al iniciar sesión,si es así, mostramos un mensaje de advertencia.
-  Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
-    if (e.target.id !== "login-submit") return;
 
+    if (e.target.id !== "login-submit") return;
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value.trim();
 
+      // Si no hay email o contraseña, mostramos un mensaje de advertencia
     if (!email || !password) {
       Swal.fire({
         icon: "warning",
@@ -32,7 +31,7 @@ export const setupLoginHandler = () => {
       });
       return;
     }
-
+    // Usamos el optional chaining para evitar errores si data o user son undefined
     if (!data.user?.email_confirmed_at) {
       Swal.fire({
         icon: "warning",

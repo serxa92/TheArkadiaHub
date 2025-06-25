@@ -240,10 +240,3 @@ body.light select {
 .genres {
   margin-top: 1rem;
 }
-.tag {
- 
-  border-radius: 12px;
-  padding: 4px 12px;
-  
-  font-size: 0.8rem;
-}

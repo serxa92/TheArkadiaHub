@@ -21,6 +21,11 @@ export const Navbar = () => `
   </ul>
 </nav>
 `;
+
+/* Esta funcion se encarga de resaltar el enlace activo en la barra de navegación
+Se utiliza para mejorar la experiencia del usuario, indicando en qué sección se encuentra actualmente */
+
+
 export const setActiveLink = () => {
   const links = document.querySelectorAll(".navlinkk");
   links.forEach(link => {
