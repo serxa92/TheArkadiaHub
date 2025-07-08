@@ -44,9 +44,6 @@ export function Sidebar() {
           <li><a href="#" id="btn-sports">Sports</a></li>
           <li><a href="#" id="btn-puzzle">Puzzle</a></li>
         </ul>
-        <button class="hamburger-btn" id="hamburger-toggle">
-          <i class="fa-solid fa-bars"></i>
-        </button>
       </nav>
     </aside>
   `;
