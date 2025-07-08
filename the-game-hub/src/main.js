@@ -21,9 +21,10 @@ import { SignUpForm } from "./components/Auth/Signup/SignUpForm.js";
 import { setupSignUpHandler } from "./components/Auth/Signup/handleSignUp.js";
 import { supabase } from "./supabaseClient.js";
 
+
 //Obtenemos la API desde las variables de entorno
 const API_KEY = import.meta.env.VITE_API_KEY;
-
+scroll
 // VARIABLES GLOBALES
 
 let currentPage = 1;
@@ -32,6 +33,7 @@ let currentURL = ""; // Evitamos cargar juegos al iniciar sesión o registrarse
 let currentOrdering = "-rating"; // Orden por defecto en el que se muestran los juegos
 let seenIds = new Set(); // Impedimos que se repitan los juegos ya vistos
 let currentGames = []; // Lista de juegos actualmente cargados
+window.scrollEnabled = true;
 
 // Aplicamos el tema guardado (modo oscuro/claro)
 applySavedTheme();
@@ -57,8 +59,6 @@ document.querySelector("#app").innerHTML = `
       <div class="game-list" id="game-list"></div>
     </main>
 `;
-
-
 
 //  Inicializamos el toggle de tema (oscuro/claro)
 initThemeToggle();
@@ -116,6 +116,11 @@ document.addEventListener("change", (e) => {
   if (e.target.id === "order-select") {
     currentOrdering = e.target.value;
     seenIds.clear();
+
+    // Actualizamos la URL con la nueva ordenación
+    const baseURL = `https://api.rawg.io/api/games/lists/main?discover=true&ordering=${currentOrdering}`;
+    currentURL = baseURL;
+
     getGames(currentURL, true);
   }
 });
@@ -179,7 +184,6 @@ const setTitle = (title, subtitle) => {
 
 const setupSearch = () => {
   const input = document.getElementById("searchInput");
-  
 
   // Intentamos buscar un juego, si no se encuentra, buscamos por slug, que es una forma de identificar juegos por su nombre amigable en la URL
 
@@ -192,7 +196,6 @@ const setupSearch = () => {
     //Mostramos el loader mientras buscamos los juegos
     loader.style.display = "flex";
     list.style.display = "grid";
-    
 
     const baseURL = `https://api.rawg.io/api/games`;
     const url = `${baseURL}?search=${encodeURIComponent(
@@ -202,7 +205,6 @@ const setupSearch = () => {
     try {
       const res = await fetch(url);
       const data = await res.json();
-      
 
       // Limpiamos los juegos vistos para evitar duplicados
       seenIds.clear();
@@ -211,7 +213,7 @@ const setupSearch = () => {
       if (data.results.length > 0) {
         renderGames(data.results, list);
         // Mostramos el loader mientras cargamos los juegos
-  
+
         return;
       }
 
@@ -233,7 +235,7 @@ const setupSearch = () => {
         title: "No results",
         text: `No game found for "${query}".`,
       });
-    }finally {
+    } finally {
       // Ocultamos el loader al finalizar la búsqueda
       loader.style.display = "none";
     }
@@ -258,11 +260,15 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
     e.preventDefault();
     const id = e.target.id;
     switch (id) {
+      
+
+      
       //Best of the year
       // En este caso, usamos un filtro que muestra los juegos mejor valorados del año actual
 
       case "btn-best":
         setTitle("Best of the Year", "Top rated games released this year");
+        window.scrollEnabled = true;
         getGames(f.best, true);
         break;
 
@@ -271,6 +277,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-thisweek":
         setTitle("This Week", "Fresh releases for this week");
+        document.querySelector(".filters").style.display = "none";
         getGames(f.thisWeek(), true);
         break;
 
@@ -279,6 +286,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-last30":
         setTitle("Last 30 Days", "Top games from the past 30 days");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.last30(), true);
         break;
 
@@ -287,6 +296,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-nextweek":
         setTitle("Next Week", "Games releasing next week");
+        window.scrollEnabled = true;
+        document.querySelector(".filters").style.display = "none";
         getGames(f.nextWeek(), true);
         break;
 
@@ -295,6 +306,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-calendar":
         setTitle("Release Calendar", "All upcoming releases");
+        window.scrollEnabled = true;
         getGames(f.calendar, true);
         break;
 
@@ -303,6 +315,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-popular":
         setTitle("Popular", "Games with the most popularity");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.popular, true);
         break;
 
@@ -311,6 +325,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-top":
         setTitle("All Time Top", "Most added games by users");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.top, true);
         break;
 
@@ -319,6 +335,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-pc":
         setTitle("PC Games", "All PC platform games");
+        window.scrollEnabled = true;
+        document.querySelector(".filters").style.display = "none";
         getGames(f.pc, true);
         break;
 
@@ -327,6 +345,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-ps":
         setTitle("PlayStation Games", "All Playstation games");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.ps, true);
         break;
 
@@ -335,6 +355,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-xbox":
         setTitle("Xbox One Games", "All Xbox One games");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.xbox, true);
         break;
 
@@ -343,6 +365,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-switch":
         setTitle("Nintendo Switch Games", "All Nintendo Switch games");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.switch, true);
         break;
 
@@ -351,6 +375,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-action":
         setTitle("Action Games", "Explore the best action-packed titles");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.action, true);
         break;
 
@@ -359,6 +385,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-rpg":
         setTitle("RPG Games", "Top role-playing experiences");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.rpg, true);
         break;
 
@@ -367,6 +395,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-shooter":
         setTitle("Shooter Games", "Best FPS and TPS games");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.shooter, true);
         break;
 
@@ -375,6 +405,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-strategy":
         setTitle("Strategy Games", "Top strategic and tactical games");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.strategy, true);
         break;
 
@@ -383,6 +415,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-adventure":
         setTitle("Adventure Games", "Discover epic adventures");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.adventure, true);
         break;
 
@@ -391,6 +425,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-racing":
         setTitle("Racing Games", "Fast-paced racing experiences");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.racing, true);
         break;
 
@@ -399,6 +435,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-sports":
         setTitle("Sports Games", "Popular sports simulations");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.sports, true);
         break;
 
@@ -407,6 +445,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-puzzle":
         setTitle("Puzzle Games", "Brain teasers and logic challenges");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.puzzle, true);
         break;
 
@@ -415,6 +455,8 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 
       case "btn-free":
         setTitle("Free Online Games", "Free-to-play online titles");
+        document.querySelector(".filters").style.display = "none";
+        window.scrollEnabled = true;
         getGames(f.free, true);
         break;
     }
@@ -426,6 +468,7 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
 document.addEventListener("DOMContentLoaded", () => {
   // Solo ejecutamos si no hay hash ya presente
   if (!location.hash || location.hash === "#/") {
+    window.scrollEnabled = true;
     handleRouteChange();
   }
 });
@@ -442,8 +485,9 @@ document.addEventListener("scroll", () => {
 
   // Solo ejecutamos el scroll infinito si no estamos en la vista de detalle
 
-  if (!isDetailView && nearBottom && currentURL) {
+   if (!isDetailView && nearBottom && currentURL && window.scrollEnabled) {
     getGames(currentURL, false);
+    
   }
 });
 
@@ -485,6 +529,18 @@ const handleRouteChange = () => {
     renderSignUpForm();
     return;
   }
+  if (route === "#/wishlist") {
+  setTitle("My Wishlist", "Your saved games list.");
+  document.getElementById("main-subtitle").style.display = "block";
+  document.querySelector(".filters").style.display = "none";
+
+  window.scrollEnabled = false; // ❌ Desactivamos scroll infinito
+  currentURL = ""; // ❌ Importante: evitamos que getGames use URL antigua
+  seenIds.clear(); // ✅ Limpiamos el historial
+
+  loadWishlist(); 
+  return;
+}
 
   // Página principal (Home)
 
@@ -495,7 +551,7 @@ const handleRouteChange = () => {
   document.getElementById("main-subtitle").style.display = "block";
   document.querySelector(".filters").style.display = "block";
 
-  const initialURL = `https://api.rawg.io/api/games/lists/main?discover=true`;
+  const initialURL = `https://api.rawg.io/api/games/lists/main?discover=true&ordering=${currentOrdering}`;
 
   currentURL = initialURL;
   seenIds.clear();
@@ -512,6 +568,8 @@ const loadGameDetail = async (id) => {
     const game = await res.json();
     const container = document.getElementById("game-list");
     container.style.display = "block";
+    document.querySelector(".filters").style.display = "none";
+    
     // Limpiamos el contenido previo y  mostramos los detalles del juego
     container.innerHTML = `
   <div class="detail-view">

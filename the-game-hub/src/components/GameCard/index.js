@@ -47,13 +47,23 @@ export const getPlatformIcons = (platforms) => {
   return unique.map((name) => platformIcons[name] ?? "").join(" ");
 };
 
-
-// Genera la tarjeta de juego
-export const GameCard = async (game) => {
-  // Obtenemos la sesión actual del usuario para verificar si está logueado
-  const { data: { session } } = await supabase.auth.getSession();
-// Verificamos si el usuario está logueado
+// Esta función genera la tarjeta del juego
+export const GameCard = async (game, inWishlist = false) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   const isLoggedIn = !!session?.user;
+  // Verificamos si el usuario está logueado y si el juego está en su wishlist, si no, mostramos el botón de añadir a wishlist
+  const wishlistBtn = isLoggedIn
+  ? `<button class="wishlist-btn ${inWishlist ? "remove" : "add"}" 
+        data-id="${game.id}" 
+        data-name="${game.name}" 
+        data-image="${game.background_image}" 
+        data-action="${inWishlist ? "remove" : "add"}"
+        title="${inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}">
+        ${inWishlist ? '<i class="fas fa-trash"></i> Remove from wishlist' : '<i class="fas fa-heart"></i> Add to wishlist'}
+     </button>`
+  : "";
 
   return `
     <div class="game-card" data-id="${game.id}">
@@ -66,14 +76,7 @@ export const GameCard = async (game) => {
         <div class="extra-info">
           <p><strong>Release Date:</strong> ${game.released ?? "N/A"}</p>
         </div>
-        ${isLoggedIn
-  ? `<button class="wishlist-btn" 
-        data-id="${game.id}" 
-        data-name="${game.name}" 
-        data-image="${game.background_image}"
-        title="Add to Wishlist">
-        Add to Wishlist</button>`
-  : ""}
+        ${wishlistBtn}
       </div>
     </div>
   `;
