@@ -64,16 +64,21 @@ async function setupWishlistHandler() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      Swal.fire({
-        icon: "warning",
-        title: "You need to log in",
-        confirmButtonText: "Log in",
-        showCancelButton: true,
-        text: "Log in to access your wishlist.",
-      });
-      return;
-    }
+  if (!user) {
+  const result = await Swal.fire({
+    icon: "warning",
+    title: "You need to log in",
+    confirmButtonText: "Log in",
+    showCancelButton: true,
+    text: "Log in to access your wishlist.",
+  });
+
+  if (result.isConfirmed) {
+    window.location.href = "#/login"; // vuelve a la página de login
+  }
+
+  return;
+}
 
     const { data: wishlist, error } = await supabase
       .from("wishlist")
