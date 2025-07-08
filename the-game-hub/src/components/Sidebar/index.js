@@ -2,6 +2,7 @@ import "./styles.css";
 
 export function Sidebar() {
   return `
+  <aside class="sidebar-container">
     <nav class="sidebar-nav">
       <ul>  
         <li><a href="#/" class="navlink"><i class="fa-solid fa-house fa-lg"></i> Home</a></li>
@@ -37,6 +38,10 @@ export function Sidebar() {
         <li><a href="#" id="btn-sports">Sports</a></li>
         <li><a href="#" id="btn-puzzle">Puzzle</a></li>
       </ul>
+      <button class="hamburger-btn" id="hamburger-toggle">
+  <i class="fa-solid fa-bars"></i>
+</button>
     </nav>
+    </aside>
   `;
 }

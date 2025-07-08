@@ -1,7 +1,6 @@
 // Librerías de terceros
 import Swal from "sweetalert2";
-import "ldrs/ring";
-import { supabase } from "./supabaseClient.js";
+
 // CSS
 import "./style.css";
 // Componentes
@@ -20,6 +19,7 @@ import { LoginForm } from "./components/Auth/Login/LoginForm.js";
 import { setupLoginHandler } from "./components/Auth/Login/handleLogin.js";
 import { SignUpForm } from "./components/Auth/Signup/SignUpForm.js";
 import { setupSignUpHandler } from "./components/Auth/Signup/handleSignUp.js";
+import { supabase } from "./supabaseClient.js";
 
 //Obtenemos la API desde las variables de entorno
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -32,7 +32,6 @@ let currentURL = ""; // Evitamos cargar juegos al iniciar sesión o registrarse
 let currentOrdering = "-rating"; // Orden por defecto en el que se muestran los juegos
 let seenIds = new Set(); // Impedimos que se repitan los juegos ya vistos
 let currentGames = []; // Lista de juegos actualmente cargados
-
 
 // Aplicamos el tema guardado (modo oscuro/claro)
 applySavedTheme();
@@ -57,8 +56,9 @@ document.querySelector("#app").innerHTML = `
       </div>
       <div class="game-list" id="game-list"></div>
     </main>
-  </section>
 `;
+
+
 
 //  Inicializamos el toggle de tema (oscuro/claro)
 initThemeToggle();
@@ -179,7 +179,7 @@ const setTitle = (title, subtitle) => {
 
 const setupSearch = () => {
   const input = document.getElementById("searchInput");
-  const list = document.getElementById("game-list");
+  
 
   // Intentamos buscar un juego, si no se encuentra, buscamos por slug, que es una forma de identificar juegos por su nombre amigable en la URL
 
@@ -189,7 +189,10 @@ const setupSearch = () => {
 
     const list = document.getElementById("game-list");
     list.innerHTML = "";
+    //Mostramos el loader mientras buscamos los juegos
+    loader.style.display = "flex";
     list.style.display = "grid";
+    
 
     const baseURL = `https://api.rawg.io/api/games`;
     const url = `${baseURL}?search=${encodeURIComponent(
@@ -199,13 +202,16 @@ const setupSearch = () => {
     try {
       const res = await fetch(url);
       const data = await res.json();
+      
 
       // Limpiamos los juegos vistos para evitar duplicados
       seenIds.clear();
 
       // Si hay resultados, los renderizamos
       if (data.results.length > 0) {
-        renderGames(data.results);
+        renderGames(data.results, list);
+        // Mostramos el loader mientras cargamos los juegos
+  
         return;
       }
 
@@ -227,6 +233,9 @@ const setupSearch = () => {
         title: "No results",
         text: `No game found for "${query}".`,
       });
+    }finally {
+      // Ocultamos el loader al finalizar la búsqueda
+      loader.style.display = "none";
     }
   };
 
@@ -236,6 +245,7 @@ const setupSearch = () => {
     if (e.key === "Enter") searchGames();
   });
 };
+setupSearch();
 
 // Gestionamos los eventos de clic en el aside
 document.querySelector(".sidebar").addEventListener("click", (e) => {
@@ -418,7 +428,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!location.hash || location.hash === "#/") {
     handleRouteChange();
   }
-  setupSearch();
 });
 
 // Scroll infinito para cualquier llamada activa
@@ -448,7 +457,11 @@ window.addEventListener("hashchange", () => {
 // Funcion para controlar el cambio de ruta y cargar el contenido adecuado
 
 const handleRouteChange = () => {
-  console.log("HANDLE ROUTE CHANGE ejecutado", location.hash);
+  /* Location hash nos da la ruta actual
+  Por ejemplo, si la ruta es #/game/123, location.hash será "#/game/123"
+   Si la ruta es #/login, location.hash será "#/login"
+   Si la ruta es #/signup, location.hash será "#/signup" */
+
   const route = location.hash;
   const container = document.getElementById("game-list");
   container.style.display = "grid";
@@ -567,7 +580,7 @@ no recarga la página */
 
 document.querySelectorAll('a[href="#/"]').forEach((link) => {
   link.addEventListener("click", (e) => {
-    console.log("→ click en Home. hash previo:", location.hash);
+    // Evitamos el comportamiento por defecto del enlace
     e.preventDefault();
     if (location.hash === "#/") {
       handleRouteChange();
@@ -607,7 +620,7 @@ document.addEventListener("click", async (e) => {
   const btn = e.target.closest(".wishlist-btn");
   if (btn) {
     // Evitanmos abrir detalle del juego al hacer clic en el botón
-    e.stopPropagation();  
+    e.stopPropagation();
     e.preventDefault();
 
     const {
@@ -624,7 +637,7 @@ document.addEventListener("click", async (e) => {
     }
 
     const { id, name, image } = btn.dataset;
-    
+
     const { error } = await supabase.from("wishlist").insert([
       {
         user_id: user.id,
@@ -652,7 +665,7 @@ document.addEventListener("click", async (e) => {
     return; // salimos aquí, para que no siga con el renderizado del detalle del juego
   }
 
-  // 2. Click en tarjeta del juego
+  // Click en tarjeta del juego
   const card = e.target.closest(".game-card");
   if (card) {
     const id = card.dataset.id;

@@ -1,74 +1,61 @@
-
-/* NAV PRINCIPAL */
+/* NAVBAR GENERAL */
 nav {
   display: flex;
-  justify-content: space-between;
-  height: 20vh;
-  font-weight: bold;
-}
-
-ul {
-  display: flex;
-  font-size: 1.3rem;
-  flex-direction: row;
-  gap: 3em;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.navlink {
-  padding: 0.4em 0.3em;
-  text-decoration: none;
-  color: inherit;
-  transition: text-decoration 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-.navlinkk:hover {
-  text-decoration: underline;
-}
-
-body.light .navlink:hover {
-  text-decoration: underline;
-}
-
-/* CLASE ACTIVA */
-
-.navlinkk.active {
-  text-decoration: underline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 1rem 2rem;
+  height: auto;
   font-weight: bold;
 }
-
 
 /* LOGO */
-
 .logo {
   width: 13rem;
   cursor: pointer;
 }
 
-/* INPUT DE BÚSQUEDA */
+/* UL */
+.nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  flex: 1;
+  justify-content: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
+/* SEARCH CONTAINER ocupa más espacio */
+.search-container {
+  flex: 1 1 400px;
+}
+
+/* BARRA DE BÚSQUEDA */
 .search-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .header__search__input {
-  width: 75em;
+  width: 100%;
+  max-width: 100%;
   height: 3em;
   border-radius: 1em;
-  padding: 0.5em;
+  padding: 0.5em 0.5em 0.5em 2.5em;
   background-color: #272626;
   color: white;
   border: none;
-  padding-left: 35px;
   transition: background-color 0.5s ease-in-out;
 }
 
-input:hover {
-  background-color: #535151;
+.header__search__input::placeholder {
+  font-style: italic;
 }
 
+/* ICONO LUPA */
 .search-wrapper::before {
   content: "";
   position: absolute;
@@ -84,15 +71,33 @@ input:hover {
   pointer-events: none;
 }
 
-/* MODO CLARO */
+input:hover {
+  background-color: #535151;
+}
 
+/* NAVLINK */
+.navlink {
+  padding: 0.4em 0.3em;
+  text-decoration: none;
+  color: inherit;
+  transition: 0.3s ease-in-out;
+}
+
+.navlink:hover,
+.navlink.active,
+body.light .navlink:hover {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+/* LIGHT MODE */
 body.light input {
   background-color: #f1f1f1;
   color: #111;
 }
 
 body.light input:hover {
-  background-color: rgb(187, 186, 186);
+  background-color: #bbbbbb;
 }
 
 body.light input::placeholder {
@@ -103,8 +108,7 @@ body.light .search-wrapper::before {
   filter: invert(0);
 }
 
-/* MODO OSCURO */
-
+/* DARK MODE */
 body.dark input {
   background-color: #272626;
   color: white;
@@ -116,4 +120,23 @@ body.dark input:hover {
 
 body.dark input::placeholder {
   color: #ccc;
+}
+
+/* RESPONSIVE */
+@media screen and (max-width: 858px) {
+  
+  nav{
+    flex-direction: column;
+    
+  }
+  .logo{
+    width: 17rem;
+
+  }
+  
+  .nav-links {
+    justify-content: center;
+    gap: 2rem;
+  }
+
 }

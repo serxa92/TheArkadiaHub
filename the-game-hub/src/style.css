@@ -35,7 +35,7 @@ a {
 
 #game-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
   padding: 1rem;
 }
@@ -48,8 +48,8 @@ a {
 
 .main-content {
   flex: 1;
-  padding: 2rem;
-  max-width: 1400px;
+  padding: 1rem;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -61,20 +61,18 @@ p {
   font-size: 1.2rem;
   margin-bottom: 1rem;
 }
-select{
+select {
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: none;
   font-size: 1rem;
   cursor: pointer;
-  
 }
 select:hover {
   background-color: var(--bg-light-color);
 }
 select:focus {
   outline: none;
-  
 }
 body.dark select {
   background-color: #272626;
@@ -92,9 +90,8 @@ body.light select {
   gap: 2rem;
   padding: 2rem;
   margin: 3rem auto;
-  
 }
-.platforms{
+.platforms {
   display: flex;
   gap: 2rem;
   justify-content: center;
@@ -110,13 +107,9 @@ body.light select {
   display: flex;
   flex-direction: column;
   font-size: 2rem;
-
-  
-  
 }
 .description {
   font-size: 1.5rem;
- 
 }
 .detail-info h2 {
   font-size: 3rem;
@@ -126,14 +119,11 @@ body.light select {
   text-align: center;
 }
 
-
-
 .meta {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   font-size: 0.95rem;
-  
 }
 
 .meta span {
@@ -233,10 +223,88 @@ body.light select {
 }
 
 @keyframes spin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .genres {
   margin-top: 1rem;
+}
+/* -------------------- RESPONSIVE -------------------- */
+
+@media (max-width: 1100px) {
+  .main-content {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 3rem;
+  }
+
+  p,
+  .description {
+    font-size: 1.1rem;
+  }
+
+  .detail-info {
+    font-size: 1.4rem;
+  }
+
+  .detail-info h2 {
+    font-size: 2.2rem;
+  }
+
+  .detail-view {
+    padding: 1.5rem;
+  }
+
+  .platforms {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .auth-form {
+    margin: 3rem auto;
+    padding: 1.5rem;
+  }
+}
+@media (max-width: 830px) {
+  .main-content {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+  }
+  p{
+    width: 80%;
+  }
+
+  p,
+  .description {
+    font-size: 1rem;
+  }
+
+  .detail-info {
+    font-size: 1.2rem;
+  }
+
+  .detail-info h2 {
+    font-size: 1.8rem;
+  }
+
+  .detail-view img {
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  #game-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
 }
