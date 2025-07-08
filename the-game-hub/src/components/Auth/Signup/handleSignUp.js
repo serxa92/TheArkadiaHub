@@ -2,11 +2,9 @@ import Swal from "sweetalert2";
 import { supabase } from "../../../supabaseClient.js";
 
 export const setupSignUpHandler = () => {
-  document.addEventListener("click", async (e) => {
-    /* Controlamos si el usuario deja los campos de email o contraseña vacíos al crear una cuenta,si es así, mostramos un mensaje de advertencia.
+  /* Controlamos si el usuario deja los campos de email o contraseña vacíos al crear una cuenta,si es así, mostramos un mensaje de advertencia.
     Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de exito. */
-    if (e.target.id !== "signup-submit") return;
-
+  const handleSignUp = async () => {
     const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value.trim();
 
@@ -41,6 +39,24 @@ export const setupSignUpHandler = () => {
           no-repeat
         `,
       });
+    }
+  };
+
+  // Click en el botón
+  document.addEventListener("click", async (e) => {
+    if (e.target.id === "signup-submit") {
+      await handleSignUp();
+    }
+  });
+
+  // Pulsar Enter desde los campos del formulario
+  document.addEventListener("keydown", async (e) => {
+    const isSignupFormFocused =
+      document.activeElement.id === "signup-email" ||
+      document.activeElement.id === "signup-password";
+
+    if (e.key === "Enter" && isSignupFormFocused) {
+      await handleSignUp();
     }
   });
 };

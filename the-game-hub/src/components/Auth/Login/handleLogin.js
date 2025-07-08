@@ -2,13 +2,13 @@ import Swal from "sweetalert2";
 import { supabase } from "../../../supabaseClient.js";
 
 export const setupLoginHandler = () => {
-  document.addEventListener("click", async (e) => {
-
-    if (e.target.id !== "login-submit") return;
+ /*  Controlamos si el usuario deja los campos de email o contraseña vacíos al iniciar sesión, si es así, mostramos un mensaje de advertencia.
+  Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de éxito.
+Si el usuario no ha confirmado su email, mostramos un mensaje de advertencia. */
+  const handleLogin = async () => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value.trim();
 
-      // Si no hay email o contraseña, mostramos un mensaje de advertencia
     if (!email || !password) {
       Swal.fire({
         icon: "warning",
@@ -31,7 +31,7 @@ export const setupLoginHandler = () => {
       });
       return;
     }
-    // Usamos el optional chaining para evitar errores si data o user son undefined
+
     if (!data.user?.email_confirmed_at) {
       Swal.fire({
         icon: "warning",
@@ -53,5 +53,23 @@ export const setupLoginHandler = () => {
         no-repeat
       `,
     });
+  };
+
+  // Click en el botón
+  document.addEventListener("click", async (e) => {
+    if (e.target.id === "login-submit") {
+      await handleLogin();
+    }
+  });
+
+  // Pulsación de tecla Enter en los campos del formulario
+  document.addEventListener("keydown", async (e) => {
+    const isLoginFormFocused =
+      document.activeElement.id === "login-email" ||
+      document.activeElement.id === "login-password";
+
+    if (e.key === "Enter" && isLoginFormFocused) {
+      await handleLogin();
+    }
   });
 };
