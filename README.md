@@ -1,7 +1,7 @@
 
-# 🎮 The Game Hub
+# 🎮 The Arkadia Hub
 
-**The Game Hub** is a web application built with vanilla JavaScript that allows users to discover, search and explore video games. It uses the public [RAWG.io API](https://rawg.io/apidocs) to fetch real game data: images, ratings, genres, platforms, release dates, and more.
+**The Arkadia Hub** is a web application built with vanilla JavaScript that allows users to discover, search and explore video games. It uses the public [RAWG.io API](https://rawg.io/apidocs) to fetch real game data: images, ratings, genres, platforms, release dates, and more.
 
 ---
 
