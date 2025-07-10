@@ -56,7 +56,6 @@ a {
 h2 {
   font-size: 3.5rem;
   padding: 2rem;
-  
 }
 p {
   font-size: 1.2rem;
@@ -101,7 +100,7 @@ body.light select {
 .detail-view img {
   width: 100%;
   max-height: auto;
-  object-fit:fill;
+  object-fit: fill;
   border-radius: 2rem;
 }
 
@@ -273,7 +272,7 @@ body.light select {
   h2 {
     font-size: 2.5rem;
   }
-  p{
+  p {
     width: 80%;
   }
 
@@ -284,23 +283,17 @@ body.light select {
 
   .detail-info {
     font-size: 1.2rem;
-    
   }
 
   .detail-info h2 {
     font-size: 1.8rem;
-    
   }
-
-  
-  
 }
-.filters{
+.filters {
   padding: 1rem;
 }
-.meta strong{
+.meta strong {
   color: var(--color-accent);
-  
 }
 
 @media (max-width: 768px) {

@@ -1,38 +1,42 @@
 // Librerías de terceros
 import Swal from "sweetalert2";
-
-// CSS
-import "./style.css";
-// Componentes
-import { Navbar } from "./components/Navbar/index.js";
-import { Sidebar } from "./components/Sidebar/index.js";
-import Loader from "./components/Loader/index.js";
-import { GameCard, getPlatformIcons } from "./components/GameCard/index.js";
-import { setActiveLink } from "./components/Navbar/index.js";
-import {
-  applySavedTheme,
-  initThemeToggle,
-} from "./components/ThemeToogle/index.js";
-import { filters } from "./utils/filters.js";
-// Autenticación
-import { LoginForm } from "./components/Auth/Login/LoginForm.js";
-import { setupLoginHandler } from "./components/Auth/Login/handleLogin.js";
-import { SignUpForm } from "./components/Auth/Signup/SignUpForm.js";
-import { setupSignUpHandler } from "./components/Auth/Signup/handleSignUp.js";
 import { supabase } from "./supabaseClient.js";
 
+// SS
+import "./style.css";
+
+// Componentes
+import {
+  Navbar,
+  Sidebar,
+  Loader,
+  GameCard,
+  getPlatformIcons,
+  setActiveLink,
+  checkAuthAndUpdateNavbar,
+  applySavedTheme,
+  initThemeToggle,
+  LoginForm,
+  setupLoginHandler,
+  SignUpForm,
+  setupSignUpHandler,
+} from "./components";
+
+// Utilidades
+import { filters } from "./utils/filters.js";
 
 //Obtenemos la API desde las variables de entorno
 const API_KEY = import.meta.env.VITE_API_KEY;
-scroll
+scroll;
+
 // VARIABLES GLOBALES
 
 let currentPage = 1;
 let isLoading = false;
-let currentURL = ""; // Evitamos cargar juegos al iniciar sesión o registrarse
-let currentOrdering = "-rating"; // Orden por defecto en el que se muestran los juegos
-let seenIds = new Set(); // Impedimos que se repitan los juegos ya vistos
-let currentGames = []; // Lista de juegos actualmente cargados
+let currentURL = "";
+let currentOrdering = "-rating";
+let seenIds = new Set();
+let currentGames = [];
 window.scrollEnabled = true;
 
 // Aplicamos el tema guardado (modo oscuro/claro)
@@ -59,7 +63,7 @@ document.querySelector("#app").innerHTML = `
       <div class="game-list" id="game-list"></div>
     </main>
 `;
-
+checkAuthAndUpdateNavbar();
 //  Inicializamos el toggle de tema (oscuro/claro)
 initThemeToggle();
 //Inicializamos el manejador de eventos de inicio de sesión
@@ -260,9 +264,6 @@ document.querySelector(".sidebar").addEventListener("click", (e) => {
     e.preventDefault();
     const id = e.target.id;
     switch (id) {
-      
-
-      
       //Best of the year
       // En este caso, usamos un filtro que muestra los juegos mejor valorados del año actual
 
@@ -485,9 +486,8 @@ document.addEventListener("scroll", () => {
 
   // Solo ejecutamos el scroll infinito si no estamos en la vista de detalle
 
-   if (!isDetailView && nearBottom && currentURL && window.scrollEnabled) {
+  if (!isDetailView && nearBottom && currentURL && window.scrollEnabled) {
     getGames(currentURL, false);
-    
   }
 });
 
@@ -495,6 +495,7 @@ document.addEventListener("scroll", () => {
 
 window.addEventListener("hashchange", () => {
   handleRouteChange();
+  checkAuthAndUpdateNavbar();
   setActiveLink();
 });
 
@@ -530,17 +531,17 @@ const handleRouteChange = () => {
     return;
   }
   if (route === "#/wishlist") {
-  setTitle("My Wishlist", "Your saved games list.");
-  document.getElementById("main-subtitle").style.display = "block";
-  document.querySelector(".filters").style.display = "none";
+    setTitle("My Wishlist", "Your saved games list.");
+    document.getElementById("main-subtitle").style.display = "block";
+    document.querySelector(".filters").style.display = "none";
 
-  window.scrollEnabled = false; // ❌ Desactivamos scroll infinito
-  currentURL = ""; // ❌ Importante: evitamos que getGames use URL antigua
-  seenIds.clear(); // ✅ Limpiamos el historial
+    window.scrollEnabled = false; // ❌ Desactivamos scroll infinito
+    currentURL = ""; // ❌ Importante: evitamos que getGames use URL antigua
+    seenIds.clear(); // ✅ Limpiamos el historial
 
-  loadWishlist(); 
-  return;
-}
+    loadWishlist();
+    return;
+  }
 
   // Página principal (Home)
 
@@ -569,7 +570,7 @@ const loadGameDetail = async (id) => {
     const container = document.getElementById("game-list");
     container.style.display = "block";
     document.querySelector(".filters").style.display = "none";
-    
+
     // Limpiamos el contenido previo y  mostramos los detalles del juego
     container.innerHTML = `
   <div class="detail-view">
@@ -580,7 +581,7 @@ const loadGameDetail = async (id) => {
       <p class="description">${
         game.description_raw || "No description available."
       }</p>
-      
+    
       <div class="meta">
         <p><strong>Developer:</strong> ${
           game.developers?.map((dev) => dev.name).join(", ") || "Unknown"
@@ -603,8 +604,6 @@ const loadGameDetail = async (id) => {
             ? `<p><strong>Official site:</strong> <a href="${game.website}" target="_blank">${game.website}</a></p>`
             : ""
         }
-        
-        
       </div>
       <button class="back-btn" id="goBack"><i>⬅</i> Back</button>
     </div>

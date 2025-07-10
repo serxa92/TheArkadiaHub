@@ -22,6 +22,7 @@ export const filters = (ordering) => ({
   free: `https://api.rawg.io/api/games?tags=free-to-play`,
   calendar: `https://api.rawg.io/api/games?dates=2025-06-01,2025-12-31`,
 
+
   thisWeek: () => {
     const today = new Date();
     const start = new Date(today.setDate(today.getDate() - today.getDay()));

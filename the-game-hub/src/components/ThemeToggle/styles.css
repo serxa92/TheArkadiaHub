@@ -17,8 +17,8 @@
 .switch__label {
   position: relative;
   display: inline-block;
-  width: 60px; 
-  height: 30px; 
+  width: 60px;
+  height: 30px;
   background-color: #2b2b2b;
   border: 2.5px solid #5b5b5b;
   border-radius: 9999px;
@@ -32,7 +32,7 @@
   left: 50%;
   transform: translate(-50%, -50%) translateX(-36%);
   display: block;
-  width: 20px; 
+  width: 20px;
   height: 20px;
   background-color: #7b7b7b;
   border-radius: 9999px;
@@ -166,16 +166,16 @@
   }
 }
 
-/*Responsive*/
+/* -------------------- RESPONSIVE -------------------- */
 
 @media (max-width: 950px) {
   .switch__label {
-    width: 50px; 
-    height: 25px; 
+    width: 50px;
+    height: 25px;
   }
 
   .switch__indicator {
-    width: 15px; 
+    width: 15px;
     height: 15px;
   }
 
@@ -187,12 +187,12 @@
 
 @media (max-width: 600px) {
   .switch__label {
-    width: 40px; 
-    height: 20px; 
+    width: 40px;
+    height: 20px;
   }
 
   .switch__indicator {
-    width: 12px; 
+    width: 12px;
     height: 12px;
   }
 

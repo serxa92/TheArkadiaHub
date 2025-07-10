@@ -1,5 +1,6 @@
-import { createThemeToggle } from "../ThemeToogle/index.js";
+import { createThemeToggle } from "../ThemeToggle/index.js";
 import "./styles.css";
+
 
 export const Navbar = () => `
 <nav>
@@ -17,13 +18,9 @@ export const Navbar = () => `
     <li>${createThemeToggle()}</li>
   </ul>
 </nav>
-
-
 `;
 
-/* Esta funcion se encarga de resaltar el enlace activo en la barra de navegación
-Se utiliza para mejorar la experiencia del usuario, indicando en qué sección se encuentra actualmente */
-
+// Aqui configuramos el evento de clic en los enlaces del navbar, para que se active el enlace correspondiente
 export const setActiveLink = () => {
   const links = document.querySelectorAll(".navlinkk");
   links.forEach((link) => {
@@ -35,4 +32,3 @@ export const setActiveLink = () => {
     }
   });
 };
-

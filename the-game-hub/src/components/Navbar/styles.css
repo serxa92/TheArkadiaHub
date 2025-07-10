@@ -122,21 +122,17 @@ body.dark input::placeholder {
   color: #ccc;
 }
 
-/* RESPONSIVE */
+/* -------------------- RESPONSIVE -------------------- */
 @media screen and (max-width: 858px) {
-  
-  nav{
+  nav {
     flex-direction: column;
-    
   }
-  .logo{
+  .logo {
     width: 17rem;
-
   }
-  
+
   .nav-links {
     justify-content: center;
     gap: 2rem;
   }
-
 }

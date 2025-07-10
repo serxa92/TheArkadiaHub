@@ -1,14 +1,11 @@
 import Swal from "sweetalert2";
 import { supabase } from "../../../supabaseClient.js";
-
+// Aqui vamos a manejar el evento de login
 export const setupLoginHandler = () => {
- /*  Controlamos si el usuario deja los campos de email o contraseña vacíos al iniciar sesión, si es así, mostramos un mensaje de advertencia.
-  Si no, enviamos los datos a Supabase para autenticar al usuario y mostramos un mensaje de éxito.
-Si el usuario no ha confirmado su email, mostramos un mensaje de advertencia. */
   const handleLogin = async () => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value.trim();
-
+    //Manejamos el caso de que el usuario no haya introducido email o password y mostramos un mensaje de alerta
     if (!email || !password) {
       Swal.fire({
         icon: "warning",
@@ -17,7 +14,8 @@ Si el usuario no ha confirmado su email, mostramos un mensaje de advertencia. */
       });
       return;
     }
-
+    /* Aqui llamamos a la función de Supabase para iniciar sesión con email y password
+    si hay un error, mostramos un mensaje de alerta con el error */
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -52,17 +50,19 @@ Si el usuario no ha confirmado su email, mostramos un mensaje de advertencia. */
         left top
         no-repeat
       `,
+    }).then(() => {
+      location.hash = "#/";
+      // Recargamos la página para actualizar el navbar y el estado de login
+      location.reload();
     });
   };
 
-  // Click en el botón
   document.addEventListener("click", async (e) => {
     if (e.target.id === "login-submit") {
       await handleLogin();
     }
   });
 
-  // Pulsación de tecla Enter en los campos del formulario
   document.addEventListener("keydown", async (e) => {
     const isLoginFormFocused =
       document.activeElement.id === "login-email" ||
