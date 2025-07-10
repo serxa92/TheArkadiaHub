@@ -568,6 +568,12 @@ const loadGameDetail = async (id) => {
     );
     const game = await res.json();
     const container = document.getElementById("game-list");
+    const trailerRes = await fetch(
+      `https://api.rawg.io/api/games/${id}/movies?key=${API_KEY}`
+    );
+    const trailerData = await trailerRes.json();
+    const trailer = trailerData.results?.[0]?.data?.max || null;
+
     container.style.display = "block";
     document.querySelector(".filters").style.display = "none";
 
@@ -581,33 +587,36 @@ const loadGameDetail = async (id) => {
       <p class="description">${
         game.description_raw || "No description available."
       }</p>
+      
     
       <div class="meta">
-        <p><strong>Developer:</strong> ${
-          game.developers?.map((dev) => dev.name).join(", ") || "Unknown"
-        }</p>
-        <p><strong>Publisher:</strong> ${
-          game.publishers?.map((pub) => pub.name).join(", ") || "Unknown"
-        }</p>
-        <p><strong>Genres:</strong> ${
-          game.genres?.map((g) => g.name).join(", ") || "Unknown"
-        }</p>
-        <p><strong>Tags:</strong> ${
-          game.tags
-            ?.slice(0, 5)
-            .map((tag) => tag.name)
-            .join(", ") || "None"
-        }</p>
-        <p><strong>Release date:</strong> ${game.released || "N/A"}</p>
-        ${
-          game.website
-            ? `<p><strong>Official site:</strong> <a href="${game.website}" target="_blank">${game.website}</a></p>`
-            : ""
-        }
-      </div>
+  <p><strong>Developer:</strong> ${
+    game.developers?.map((dev) => dev.name).join(", ") || "Unknown"
+  }</p>
+  <p><strong>Publisher:</strong> ${
+    game.publishers?.map((pub) => pub.name).join(", ") || "Unknown"
+  }</p>
+  <p><strong>Genres:</strong> ${
+    game.genres?.map((g) => g.name).join(", ") || "Unknown"
+  }</p>
+  <p><strong>Tags:</strong> ${
+    game.tags
+      ?.slice(0, 5)
+      .map((tag) => tag.name)
+      .join(", ") || "None"
+  }</p>
+  <p><strong>Release date:</strong> ${game.released || "N/A"}</p>
+
+  ${
+    game.website
+      ? `<p><strong>Official site:</strong> <a href="${game.website}" target="_blank">${game.website}</a></p>`
+      : ""
+  }
+</div>
       <button class="back-btn" id="goBack"><i>⬅</i> Back</button>
     </div>
   </div>
+  
 `;
 
     // Actualizamos el título y subtítulo de la página

@@ -295,6 +295,24 @@ body.light select {
 .meta strong {
   color: var(--color-accent);
 }
+.meta a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+}
+
+.meta a i {
+  margin-right: 6px;
+  color: #ccc;
+}
+.meta a:hover {
+  color: var(--color-accent);
+}
+.meta a:hover i {
+  color: #fff;
+}
+
 
 @media (max-width: 768px) {
   #game-list {
