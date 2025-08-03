@@ -10,6 +10,9 @@ export function Sidebar() {
   return `
     <aside class="sidebar-container">
       <nav class="sidebar-nav">
+      <button id="close-sidebar" class="close-sidebar-btn" aria-label="Close sidebar">
+    <i class="fas fa-times"></i>
+  </button>
         <ul>  
           <li>
             <a href="#/" id="btn-home"><i class="fa-solid fa-house fa-lg"></i> Home</a>
@@ -211,10 +214,18 @@ function setupWishlistButtonListeners() {
 export const setupSidebarToggle = () => {
   const hamburger = document.getElementById("hamburger");
   const sidebar = document.querySelector(".sidebar-container");
+  const closeBtn = document.getElementById("close-sidebar");
 
-  if (hamburger && sidebar) {
-    hamburger.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-    });
+  if (!hamburger || !sidebar) return;
+
+  const toggleSidebar = () => {
+    sidebar.classList.toggle("active");
+  };
+
+  hamburger.addEventListener("click", toggleSidebar);
+
+  // Solo añadimos evento al botón de cerrar si existe
+  if (closeBtn) {
+    closeBtn.addEventListener("click", toggleSidebar);
   }
 };

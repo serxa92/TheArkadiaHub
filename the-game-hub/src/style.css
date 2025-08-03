@@ -6,6 +6,7 @@
   --color-accent: #fe04ff;
   --text-color: #000000;
   --bg-light-color: rgb(219, 217, 217);
+  --sidebar-bg: #f4f4f4;
 }
 * {
   box-sizing: border-box;
@@ -18,11 +19,13 @@
 body.light {
   background-color: white;
   color: black;
+  --sidebar-bg: #f4f4f4;
 }
 
 body.dark {
   background-color: #202021;
   color: white;
+  --sidebar-bg: var(--bg-color);
 }
 
 html {

@@ -2,7 +2,7 @@
 import Swal from "sweetalert2";
 import { supabase } from "./supabaseClient.js";
 
-// SS
+// css
 import "./style.css";
 
 // Componentes
@@ -18,9 +18,11 @@ import {
   initThemeToggle,
   LoginForm,
   setupLoginHandler,
+  setupSidebarToggle,
   SignUpForm,
   setupSignUpHandler,
 } from "./components";
+
 
 // Utilidades
 import { filters } from "./utils/filters.js";
@@ -70,6 +72,8 @@ initThemeToggle();
 setupLoginHandler();
 // Inicializamos el manejador de eventos de registro
 setupSignUpHandler();
+//Inicializamos el menu hamburguesa del sidebar
+setupSidebarToggle();
 
 // Aquí llamamos a la API para obtener los juegos
 

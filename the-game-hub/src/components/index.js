@@ -5,7 +5,7 @@ export * from "./Navbar";
 export { checkAuthAndUpdateNavbar } from "./Navbar/updateAuthUI.js";
 
 //  Sidebar
-export { Sidebar } from "./Sidebar/index.js";
+export { Sidebar, setupSidebarToggle } from "./Sidebar/index.js";
 
 // Loader
 export { default as Loader } from "./Loader/index.js";
