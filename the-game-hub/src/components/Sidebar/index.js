@@ -211,10 +211,14 @@ function setupWishlistButtonListeners() {
     });
   });
 }
+/* Configuración del toggle del sidebar
+Esta función se encarga de añadir el evento al botón de hamburguesa y al botón de cerrar
+para mostrar y ocultar el sidebar respectivamente. */
 export const setupSidebarToggle = () => {
   const hamburger = document.getElementById("hamburger");
   const sidebar = document.querySelector(".sidebar-container");
   const closeBtn = document.getElementById("close-sidebar");
+  const sidebarLinks = document.querySelectorAll(".sidebar-container a");
 
   if (!hamburger || !sidebar) return;
 
@@ -224,8 +228,15 @@ export const setupSidebarToggle = () => {
 
   hamburger.addEventListener("click", toggleSidebar);
 
-  // Solo añadimos evento al botón de cerrar si existe
   if (closeBtn) {
     closeBtn.addEventListener("click", toggleSidebar);
   }
+ // Cerrar el sidebar al hacer clic en cualquier enlace
+  sidebarLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (window.innerWidth <= 909) {
+        sidebar.classList.remove("active");
+      }
+    });
+  });
 };
