@@ -539,9 +539,9 @@ const handleRouteChange = () => {
     document.getElementById("main-subtitle").style.display = "block";
     document.querySelector(".filters").style.display = "none";
 
-    window.scrollEnabled = false; // ❌ Desactivamos scroll infinito
-    currentURL = ""; // ❌ Importante: evitamos que getGames use URL antigua
-    seenIds.clear(); // ✅ Limpiamos el historial
+    window.scrollEnabled = false; // Desactivamos scroll infinito
+    currentURL = ""; // evitamos que getGames use URL antigua
+    seenIds.clear(); // Limpiamos el historial
 
     loadWishlist();
     return;
@@ -640,6 +640,7 @@ const loadGameDetail = async (id) => {
     Swal.fire({
       icon: "error",
       title: "Oops...",
+      theme: "dark",
       text: "Game details could not be loaded.",
     });
   }
@@ -700,6 +701,7 @@ document.addEventListener("click", async (e) => {
       Swal.fire({
         icon: "warning",
         title: "You need to log in",
+        theme: "dark",
         text: "Log in to add games to your wishlist.",
       });
       return;
@@ -720,6 +722,7 @@ document.addEventListener("click", async (e) => {
       Swal.fire({
         icon: "error",
         title: "Error",
+        theme: "dark",
         text: "The game could not be saved.",
       });
       console.error(error);
@@ -727,6 +730,8 @@ document.addEventListener("click", async (e) => {
       Swal.fire({
         icon: "success",
         title: "Added to Wishlist",
+        theme: "dark",
+        borderRadius: "10px",
         text: `"${name}" has been added to your wishlist.`,
       });
     }

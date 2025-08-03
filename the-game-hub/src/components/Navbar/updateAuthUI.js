@@ -22,6 +22,8 @@ export async function checkAuthAndUpdateNavbar() {
       const result = await Swal.fire({
         title: "Do you want to log out?",
         icon: "question",
+        theme: "dark",
+        borderRadius: "10px",
         showCancelButton: true,
         confirmButtonText: "Yes, log out",
       });

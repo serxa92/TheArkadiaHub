@@ -306,7 +306,6 @@ body.light select {
 
 .meta a i {
   margin-right: 6px;
-  
 }
 .meta a:hover {
   color: var(--color-accent);
@@ -315,9 +314,17 @@ body.light select {
   color: #fff;
 }
 
-
 @media (max-width: 768px) {
   #game-list {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+@media (max-width: 1100px) {
+  .custom-swal-popup {
+    max-width: 275px;
+    height: 200px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgb(102, 100, 102);
+
   }
 }

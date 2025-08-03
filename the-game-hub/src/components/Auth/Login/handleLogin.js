@@ -9,6 +9,8 @@ export const setupLoginHandler = () => {
     if (!email || !password) {
       Swal.fire({
         icon: "warning",
+        theme: "dark",
+        borderRadius: "10px",
         title: "Missing fields",
         text: "Please enter both email and password.",
       });
@@ -24,6 +26,8 @@ export const setupLoginHandler = () => {
     if (error) {
       Swal.fire({
         icon: "error",
+        theme: "dark",
+        borderRadius: "10px",
         title: "Login error",
         text: error.message,
       });
@@ -33,6 +37,8 @@ export const setupLoginHandler = () => {
     if (!data.user?.email_confirmed_at) {
       Swal.fire({
         icon: "warning",
+        theme: "dark",
+        borderRadius: "10px",
         title: "Email not confirmed",
         text: "Please check your inbox to confirm your account.",
       });
@@ -41,15 +47,21 @@ export const setupLoginHandler = () => {
 
     Swal.fire({
       title: "Login successful!",
-      width: 500,
-      padding: "3em",
-      color: "#716add",
-      backdrop: `
-        rgba(0, 35, 123, 0.4)
-        url("/images/cat.gif")
-        left top
-        no-repeat
-      `,
+  width: 270,
+  padding: "1em",
+  borderRadius: "10px",
+  theme: "dark",
+  color: "#5f55eaff",
+  customClass: {
+    popup: "custom-swal-popup"
+  },
+  backdrop: `
+    rgba(0, 35, 123, 0.4)
+    url("/images/cat.gif")
+    center
+    / contain
+    no-repeat
+  `,
     }).then(() => {
       location.hash = "#/";
       // Recargamos la página para actualizar el navbar y el estado de login

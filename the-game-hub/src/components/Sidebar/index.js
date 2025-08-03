@@ -3,7 +3,6 @@ import Swal from "sweetalert2";
 import { supabase } from "../../supabaseClient.js";
 import { GameCard } from "../GameCard/index.js";
 
-
 export function Sidebar() {
   // Timeout para asegurar que el DOM esté listo antes de añadir el manejador
   setTimeout(() => setupWishlistHandler(), 0);
@@ -71,6 +70,8 @@ async function setupWishlistHandler() {
       const result = await Swal.fire({
         icon: "warning",
         title: "You need to log in",
+        theme: "dark",
+        borderRadius: "10px",
         confirmButtonText: "Log in",
         showCancelButton: true,
         text: "Log in to access your wishlist.",
@@ -114,6 +115,8 @@ async function loadWishlist() {
   if (error || !wishlist || wishlist.length === 0) {
     Swal.fire({
       icon: "info",
+      theme: "dark",
+      borderRadius: "10px",
       title: "Empty Wishlist",
       text: "You have no games in your wishlist yet.",
     });
@@ -141,7 +144,6 @@ async function loadWishlist() {
   setupWishlistButtonListeners();
 }
 
-
 // Botones para añadir o eliminar de la wishlist
 function setupWishlistButtonListeners() {
   document.querySelectorAll(".wishlist-btn").forEach((btn) => {
@@ -156,38 +158,57 @@ function setupWishlistButtonListeners() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        Swal.fire(
-          "Oops!",
-          "You need to log in to manage your wishlist.",
-          "warning"
-        );
+        Swal.fire({
+          icon: "Oops!",
+          title: "You need to log in to manage your wishlist.",
+          theme: "dark",
+          borderRadius: "10px",
+          confirmButtonText: "Log in",
+          showCancelButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "#/login";
+          }
+        });
         return;
       }
 
-     if (action === "add") {
-  // Verifica si ya existe en la wishlist del usuario
-  const { data: existing } = await supabase
-    .from("wishlist")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("game_id", gameId);
+      if (action === "add") {
+        // Verifica si ya existe en la wishlist del usuario
+        const { data: existing } = await supabase
+          .from("wishlist")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("game_id", gameId);
 
-  if (existing && existing.length > 0) {
-    Swal.fire("Oops!", `${gameName} is already in your wishlist.`, "info");
-    return;
-  }
+        if (existing && existing.length > 0) {
+          Swal.fire({
+            title: "Oops!",
+            text: `${gameName} is already in your wishlist.`,
+            icon: "info",
+            theme: "dark",
+            borderRadius: "10px",
+          });
+          return;
+        }
 
-  await supabase.from("wishlist").insert([
-    {
-      user_id: user.id,
-      game_id: gameId,
-      game_name: gameName,
-      game_image: gameImage,
-    },
-  ]);
+        await supabase.from("wishlist").insert([
+          {
+            user_id: user.id,
+            game_id: gameId,
+            game_name: gameName,
+            game_image: gameImage,
+          },
+        ]);
 
-  Swal.fire("Added!", `${gameName} was added to your wishlist.`, "success");
-}
+        Swal.fire({
+          title: "Added!",
+          text: `${gameName} was added to your wishlist.`,
+          icon: "success",
+          theme: "dark",
+          borderRadius: "10px",
+        });
+      }
 
       if (action === "remove") {
         await supabase
@@ -196,11 +217,13 @@ function setupWishlistButtonListeners() {
           .eq("user_id", user.id)
           .eq("game_id", gameId);
 
-        Swal.fire(
-          "Removed",
-          `${gameName} was removed from your wishlist.`,
-          "info"
-        );
+        Swal.fire({
+          title: "Removed",
+          text: `${gameName} was removed from your wishlist.`,
+          icon: "info",
+          theme: "dark",
+          borderRadius: "10px",
+        });
 
         // Recargar si estamos visualizando la wishlist
         const subtitle = document.getElementById("main-subtitle")?.textContent;
@@ -231,7 +254,7 @@ export const setupSidebarToggle = () => {
   if (closeBtn) {
     closeBtn.addEventListener("click", toggleSidebar);
   }
- // Cerrar el sidebar al hacer clic en cualquier enlace
+  // Cerrar el sidebar al hacer clic en cualquier enlace
   sidebarLinks.forEach((link) => {
     link.addEventListener("click", () => {
       // Cerrar el sidebar

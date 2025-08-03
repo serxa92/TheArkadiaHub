@@ -11,6 +11,8 @@ export const setupSignUpHandler = () => {
     if (!email || !password) {
       Swal.fire({
         icon: "warning",
+        theme: "dark",
+        borderRadius: "10px",
         title: "Missing fields",
         text: "Please enter both email and password.",
       });
@@ -22,6 +24,8 @@ export const setupSignUpHandler = () => {
     if (error) {
       Swal.fire({
         icon: "error",
+        theme: "dark",
+        borderRadius: "10px",
         title: "Sign-up error",
         text: error.message,
       });
@@ -29,6 +33,8 @@ export const setupSignUpHandler = () => {
       Swal.fire({
         title: "Account created successfully!",
         text: "Check your email to confirm your account.",
+        theme: "dark",
+        borderRadius: "10px",
         width: 500,
         padding: "3em",
         color: "#716add",
