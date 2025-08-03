@@ -645,8 +645,7 @@ const loadGameDetail = async (id) => {
   }
 };
 
-/* Forzamos la recarga de contenido al hacer clic en "Home" aunque ya estemos en "#/" por que al ser  un SPA, 
-no recarga la página */
+/* Forzamos la recarga de contenido al hacer clic en "Home" aunque ya estemos en "#/" por que al ser  un SPA, no recarga la página */
 
 document.querySelectorAll('a[href="#/"]').forEach((link) => {
   link.addEventListener("click", (e) => {
