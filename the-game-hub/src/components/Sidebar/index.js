@@ -234,6 +234,7 @@ export const setupSidebarToggle = () => {
  // Cerrar el sidebar al hacer clic en cualquier enlace
   sidebarLinks.forEach((link) => {
     link.addEventListener("click", () => {
+      // Cerrar el sidebar
       if (window.innerWidth <= 909) {
         sidebar.classList.remove("active");
       }
